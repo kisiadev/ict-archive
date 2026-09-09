@@ -8,13 +8,12 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <!-- PapaParse CDN (구글 시트 CSV 파싱 라이브러리) -->
+  <!-- PapaParse CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
     * { font-family: 'Pretendard', sans-serif; }
     
-    /* 2줄 초과 시 자동 말줄임 (...) 처리 */
     .line-clamp-2 {
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -216,7 +215,6 @@
       renderCrewCards();
     }
 
-    // 크루 카드 렌더링
     function renderCrewCards() {
       const grid = document.getElementById('crew-grid');
       const filtered = currentGenFilter === 'ALL' ? crewData : crewData.filter(item => item.gen === currentGenFilter);
@@ -226,9 +224,8 @@
         return;
       }
 
-      grid.innerHTML = filtered.map((item, idx) => {
+      grid.innerHTML = filtered.map(item => {
         const isBest = String(item.isBest).toUpperCase() === 'TRUE';
-        // 전체 데이터 인덱스 찾기
         const originalIndex = crewData.indexOf(item);
 
         return `
@@ -240,13 +237,11 @@
               </div>
               <span class="text-xs font-semibold text-blue-600 tracking-wide uppercase">[${item.domain || '일반'}]</span>
               <h3 class="text-base font-bold text-slate-900 mt-1 leading-snug">${item.title || ''}</h3>
-              <!-- 2줄 초과 시 자동 줄임 처리 -->
               <p class="text-xs text-slate-500 mt-2 line-clamp-2 leading-relaxed">${item.description || ''}</p>
               ${item.team ? `<p class="text-[11px] text-slate-400 mt-2"><i class="fa-solid fa-users text-[10px] mr-1"></i>${item.team}</p>` : ''}
             </div>
             <div class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs">
               <span class="text-slate-400"><i class="fa-regular fa-calendar mr-1"></i>${item.date || ''}</span>
-              <!-- [자세히 보기] 팝업 호출 버튼 -->
               <button onclick="openModal(${originalIndex})" class="font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1.5 transition">
                 <span>자세히 보기</span> <i class="fa-solid fa-circle-info text-[11px]"></i>
               </button>
@@ -256,7 +251,7 @@
       }).join('');
     }
 
-    // 모달(팝업) 열기 함수
+    // 모달(팝업) 상세 렌더링 - 구글 시트의 신규 필드 반영
     function openModal(index) {
       const item = crewData[index];
       if (!item) return;
@@ -264,32 +259,41 @@
       const isBest = String(item.isBest).toUpperCase() === 'TRUE';
       const content = document.getElementById('modal-content');
 
+      // 팝업용 본문 내용 (modalDesc 우선, 없으면 기본 description 사용)
+      const detailDescription = item.modalDesc && item.modalDesc.trim() !== '' ? item.modalDesc : item.description;
+      // 링크 버튼 텍스트 (linkLabel 우선, 없으면 '산출물 바로가기')
+      const customLinkLabel = item.linkLabel && item.linkLabel.trim() !== '' ? item.linkLabel : '산출물 바로가기';
+
       content.innerHTML = `
         <div class="flex items-center gap-2 mb-3">
           <span class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">${item.gen || ''} · ${item.category || ''}</span>
-          ${isBest ? '<span class="px-2 py-0.5 rounded-md text-xs font-bold bg-amber-50 text-amber-600 border border-amber-200"><i class="fa-solid fa-award mr-1"></i>우수작</span>' : ''}
+          ${isBest ? '<span class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-amber-50 text-amber-600 border border-amber-200"><i class="fa-solid fa-award mr-1"></i>우수작</span>' : ''}
         </div>
         <span class="text-xs font-semibold text-blue-600 tracking-wide uppercase">[${item.domain || '일반'}]</span>
         <h3 class="text-xl font-extrabold text-slate-900 mt-1 leading-snug">${item.title || ''}</h3>
         
-        <div class="my-4 p-3 bg-slate-50 rounded-lg text-xs space-y-1.5 text-slate-600 border border-slate-100">
-          <div><span class="text-slate-400 font-medium">활동 일자:</span> ${item.date || '-'}</div>
-          ${item.team ? `<div><span class="text-slate-400 font-medium">참여 대상:</span> ${item.team}</div>` : ''}
+        <!-- 메타 정보 박스 -->
+        <div class="my-4 p-3.5 bg-slate-50 rounded-xl text-xs space-y-1.5 text-slate-600 border border-slate-100">
+          <div><span class="text-slate-400 font-medium w-16 inline-block">활동 일자:</span> ${item.date || '-'}</div>
+          ${item.team ? `<div><span class="text-slate-400 font-medium w-16 inline-block">참여 대상:</span> ${item.team}</div>` : ''}
+          ${item.modalMentor ? `<div><span class="text-slate-400 font-medium w-16 inline-block">지도/멘토:</span> <span class="font-semibold text-slate-700">${item.modalMentor}</span></div>` : ''}
+          ${item.modalHighlight ? `<div><span class="text-slate-400 font-medium w-16 inline-block">주요 성과:</span> <span class="text-blue-700 font-semibold">${item.modalHighlight}</span></div>` : ''}
         </div>
 
-        <div class="space-y-1 my-4">
+        <!-- 상세 본문 영역 (줄바꿈 지원) -->
+        <div class="space-y-1.5 my-4">
           <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">상세 내용</h4>
-          <!-- 줄바꿈(Enter) 유지 표시 -->
-          <div class="text-sm text-slate-600 whitespace-pre-line leading-relaxed max-h-56 overflow-y-auto pr-2">
-            ${item.description || '등록된 상세 설명이 없습니다.'}
+          <div class="text-sm text-slate-600 whitespace-pre-line leading-relaxed max-h-60 overflow-y-auto pr-2">
+            ${detailDescription || '등록된 상세 설명이 없습니다.'}
           </div>
         </div>
 
-        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+        <!-- 하단 액션 버튼 -->
+        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-end gap-2.5">
           <button onclick="closeModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition">닫기</button>
-          ${item.link && item.link !== '#' ? `
+          ${item.link && item.link.trim() !== '' && item.link !== '#' ? `
             <a href="${item.link}" target="_blank" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 shadow-sm transition">
-              <span>산출물 바로가기</span> <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+              <span>${customLinkLabel}</span> <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
             </a>
           ` : ''}
         </div>
@@ -297,23 +301,20 @@
 
       const modal = document.getElementById('detail-modal');
       modal.classList.remove('hidden');
-      document.body.style.overflow = 'hidden'; // 모달 오픈 시 배경 스크롤 방지
+      document.body.style.overflow = 'hidden';
     }
 
-    // 모달 닫기 함수
     function closeModal() {
       const modal = document.getElementById('detail-modal');
       modal.classList.add('hidden');
       document.body.style.overflow = '';
     }
 
-    // 모달 바깥 배경 클릭 시 닫기
     window.addEventListener('click', (e) => {
       const modal = document.getElementById('detail-modal');
       if (e.target === modal) closeModal();
     });
 
-    // ESC 키 입력 시 모달 닫기
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeModal();
     });
