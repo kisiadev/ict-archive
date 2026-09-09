@@ -13,6 +13,14 @@
   <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
     * { font-family: 'Pretendard', sans-serif; }
+    
+    /* 2줄 초과 시 자동 말줄임 (...) 처리 */
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
@@ -50,7 +58,7 @@
           </h2>
           <p class="text-sm text-slate-500 mt-1">기수별 활동 타임라인 및 우수 프로젝트 성과물</p>
         </div>
-        <!-- 기수 탭 필터 (데이터 기반 자동 생성) -->
+        <!-- 기수 탭 필터 -->
         <div class="flex items-center gap-2 overflow-x-auto pb-1" id="crew-gen-filters">
           <button onclick="filterCrew('ALL')" class="crew-filter-btn px-3.5 py-1.5 rounded-full text-xs font-semibold bg-blue-600 text-white shadow-sm">전체</button>
         </div>
@@ -112,6 +120,19 @@
 
   </main>
 
+  <!-- 상세 보기 팝업 모달 -->
+  <div id="detail-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-xl w-full p-6 sm:p-8 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+      <!-- 닫기 버튼 -->
+      <button onclick="closeModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 text-lg w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 transition">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <!-- 모달 본문 콘텐츠 -->
+      <div id="modal-content"></div>
+    </div>
+  </div>
+
   <!-- Footer -->
   <footer class="border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-400 mt-16">
     <div class="max-w-6xl mx-auto px-6">
@@ -120,7 +141,7 @@
   </footer>
 
   <!-- ========================================== -->
-  <!-- ⚙️ 구글 스프레드시트 연동 스크립트 -->
+  <!-- ⚙️ 스크립트 -->
   <!-- ========================================== -->
   <script>
     const CREW_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSX8ZG1BwtKpvS72k4ut88Nf2gdn9PP78EFKjedj9_s56NuOeYLpsxcmG8L4pTPWjGIuNy0xpTCnsBt/pub?gid=0&single=true&output=csv";
@@ -195,6 +216,7 @@
       renderCrewCards();
     }
 
+    // 크루 카드 렌더링
     function renderCrewCards() {
       const grid = document.getElementById('crew-grid');
       const filtered = currentGenFilter === 'ALL' ? crewData : crewData.filter(item => item.gen === currentGenFilter);
@@ -204,8 +226,11 @@
         return;
       }
 
-      grid.innerHTML = filtered.map(item => {
+      grid.innerHTML = filtered.map((item, idx) => {
         const isBest = String(item.isBest).toUpperCase() === 'TRUE';
+        // 전체 데이터 인덱스 찾기
+        const originalIndex = crewData.indexOf(item);
+
         return `
           <div class="bg-white rounded-xl border border-slate-200 p-5 flex flex-col justify-between hover:shadow-md transition-shadow relative">
             <div>
@@ -215,21 +240,83 @@
               </div>
               <span class="text-xs font-semibold text-blue-600 tracking-wide uppercase">[${item.domain || '일반'}]</span>
               <h3 class="text-base font-bold text-slate-900 mt-1 leading-snug">${item.title || ''}</h3>
-              <p class="text-xs text-slate-500 mt-2 line-clamp-2">${item.description || ''}</p>
+              <!-- 2줄 초과 시 자동 줄임 처리 -->
+              <p class="text-xs text-slate-500 mt-2 line-clamp-2 leading-relaxed">${item.description || ''}</p>
               ${item.team ? `<p class="text-[11px] text-slate-400 mt-2"><i class="fa-solid fa-users text-[10px] mr-1"></i>${item.team}</p>` : ''}
             </div>
             <div class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs">
               <span class="text-slate-400"><i class="fa-regular fa-calendar mr-1"></i>${item.date || ''}</span>
-              ${item.link ? `
-                <a href="${item.link}" target="_blank" class="font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1">
-                  산출물 보기 <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-                </a>
-              ` : '<span class="text-slate-300">자료 준비중</span>'}
+              <!-- [자세히 보기] 팝업 호출 버튼 -->
+              <button onclick="openModal(${originalIndex})" class="font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1.5 transition">
+                <span>자세히 보기</span> <i class="fa-solid fa-circle-info text-[11px]"></i>
+              </button>
             </div>
           </div>
         `;
       }).join('');
     }
+
+    // 모달(팝업) 열기 함수
+    function openModal(index) {
+      const item = crewData[index];
+      if (!item) return;
+
+      const isBest = String(item.isBest).toUpperCase() === 'TRUE';
+      const content = document.getElementById('modal-content');
+
+      content.innerHTML = `
+        <div class="flex items-center gap-2 mb-3">
+          <span class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">${item.gen || ''} · ${item.category || ''}</span>
+          ${isBest ? '<span class="px-2 py-0.5 rounded-md text-xs font-bold bg-amber-50 text-amber-600 border border-amber-200"><i class="fa-solid fa-award mr-1"></i>우수작</span>' : ''}
+        </div>
+        <span class="text-xs font-semibold text-blue-600 tracking-wide uppercase">[${item.domain || '일반'}]</span>
+        <h3 class="text-xl font-extrabold text-slate-900 mt-1 leading-snug">${item.title || ''}</h3>
+        
+        <div class="my-4 p-3 bg-slate-50 rounded-lg text-xs space-y-1.5 text-slate-600 border border-slate-100">
+          <div><span class="text-slate-400 font-medium">활동 일자:</span> ${item.date || '-'}</div>
+          ${item.team ? `<div><span class="text-slate-400 font-medium">참여 대상:</span> ${item.team}</div>` : ''}
+        </div>
+
+        <div class="space-y-1 my-4">
+          <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">상세 내용</h4>
+          <!-- 줄바꿈(Enter) 유지 표시 -->
+          <div class="text-sm text-slate-600 whitespace-pre-line leading-relaxed max-h-56 overflow-y-auto pr-2">
+            ${item.description || '등록된 상세 설명이 없습니다.'}
+          </div>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+          <button onclick="closeModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition">닫기</button>
+          ${item.link && item.link !== '#' ? `
+            <a href="${item.link}" target="_blank" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 shadow-sm transition">
+              <span>산출물 바로가기</span> <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+            </a>
+          ` : ''}
+        </div>
+      `;
+
+      const modal = document.getElementById('detail-modal');
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden'; // 모달 오픈 시 배경 스크롤 방지
+    }
+
+    // 모달 닫기 함수
+    function closeModal() {
+      const modal = document.getElementById('detail-modal');
+      modal.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    // 모달 바깥 배경 클릭 시 닫기
+    window.addEventListener('click', (e) => {
+      const modal = document.getElementById('detail-modal');
+      if (e.target === modal) closeModal();
+    });
+
+    // ESC 키 입력 시 모달 닫기
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
 
     function setupSeminarFilters() {
       const select = document.getElementById('seminar-domain-filter');
