@@ -123,7 +123,6 @@
   <!-- ⚙️ 구글 스프레드시트 연동 스크립트 -->
   <!-- ========================================== -->
   <script>
-    // ⚠️ STEP 2에서 복사한 본인의 구글 시트 CSV 링크를 아래 따옴표 안에 넣어주세요.
     const CREW_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSX8ZG1BwtKpvS72k4ut88Nf2gdn9PP78EFKjedj9_s56NuOeYLpsxcmG8L4pTPWjGIuNy0xpTCnsBt/pub?gid=0&single=true&output=csv";
     const SEMINAR_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSX8ZG1BwtKpvS72k4ut88Nf2gdn9PP78EFKjedj9_s56NuOeYLpsxcmG8L4pTPWjGIuNy0xpTCnsBt/pub?gid=1085601582&single=true&output=csv";
 
@@ -131,7 +130,6 @@
     let seminarData = [];
     let currentGenFilter = 'ALL';
 
-    // CSV 데이터 파싱 함수 (PapaParse 활용)
     function fetchSheetData(url) {
       return new Promise((resolve, reject) => {
         Papa.parse(url, {
@@ -144,16 +142,8 @@
       });
     }
 
-    // 전체 초기화 및 데이터 로드
     async function initArchive() {
       try {
-        // 실제 URL이 설정되었는지 확인 (미설정 시 데모 데이터 사용 안내)
-        if (CREW_CSV_URL.includes("여기에_") || SEMINAR_CSV_URL.includes("여기에_")) {
-          console.warn("구글 스프레드시트 URL이 등록되지 않아 데모 모드로 전환합니다.");
-          loadDemoData();
-          return;
-        }
-
         const [crewRes, seminarRes] = await Promise.all([
           fetchSheetData(CREW_CSV_URL),
           fetchSheetData(SEMINAR_CSV_URL)
@@ -170,14 +160,17 @@
       } catch (error) {
         console.error("데이터 로드 실패:", error);
         document.getElementById('crew-grid').innerHTML = `
-          <div class="col-span-full py-12 text-center text-red-500 text-xs">
-            구글 스프레드시트 데이터를 불러오는 데 실패했습니다. [웹에 게시] 설정을 확인해주세요.
+          <div class="col-span-full p-6 bg-red-50 border border-red-200 rounded-xl text-center text-red-600 text-xs leading-relaxed">
+            <p class="font-bold text-sm mb-1"><i class="fa-solid fa-triangle-exclamation mr-1"></i> 데이터를 불러오지 못했습니다.</p>
+            구글 스프레드시트의 권한 및 네트워크 연결 상태를 확인해주세요.
           </div>
+        `;
+        document.getElementById('seminar-table-body').innerHTML = `
+          <tr><td colspan="5" class="py-6 text-center text-red-500 text-xs">데이터 로드 실패</td></tr>
         `;
       }
     }
 
-    // 크루 기수 버튼 자동 생성
     function setupCrewFilters() {
       const container = document.getElementById('crew-gen-filters');
       const gens = [...new Set(crewData.map(d => d.gen).filter(Boolean))].sort().reverse();
@@ -202,7 +195,6 @@
       renderCrewCards();
     }
 
-    // 크루 카드 렌더링
     function renderCrewCards() {
       const grid = document.getElementById('crew-grid');
       const filtered = currentGenFilter === 'ALL' ? crewData : crewData.filter(item => item.gen === currentGenFilter);
@@ -239,7 +231,6 @@
       }).join('');
     }
 
-    // 세미나 분야 셀렉트박스 자동 구성
     function setupSeminarFilters() {
       const select = document.getElementById('seminar-domain-filter');
       const domains = [...new Set(seminarData.map(d => d.domain).filter(Boolean))].sort();
@@ -251,7 +242,6 @@
       select.innerHTML = html;
     }
 
-    // 세미나 테이블 렌더링
     function renderSeminars() {
       const keyword = (document.getElementById('seminar-search').value || '').toLowerCase();
       const domain = document.getElementById('seminar-domain-filter').value;
@@ -295,22 +285,6 @@
       `).join('');
     }
 
-    // URL 입력 전 테스트용 예시 데이터
-<!--
-    function loadDemoData() {
-      crewData = [
-        { gen: "3기", category: "발대식/OT", domain: "융합보안", isBest: "FALSE", title: "제3기 ICT융합보안크루 발대식 및 OT", date: "2026-05-06", team: "크루원 35명", description: "위촉장 수여 및 연간 프로젝트 운영 안내", link: "#" },
-        { gen: "2기", category: "성과발표회", domain: "스마트제조", isBest: "TRUE", title: "PLC 제어망 이상 트래픽 탐지 경량 모델", date: "2025-11-28", team: "팩토리쉴드", description: "Modbus 기반 비인가 쓰기 명령 탐지 AI 모델", link: "#" }
-      ];
-      seminarData = [
-        { domain: "AI보안", title: "2026 AI 융합보안 트렌드 및 침해 대응", speaker: "김한국 박사", date: "2026-04-28", pdfUrl: "#", videoUrl: "https://youtube.com" }
-      ];
-      setupCrewFilters();
-      setupSeminarFilters();
-      renderCrewCards();
-      renderSeminars();
-    }
--->
     window.addEventListener('DOMContentLoaded', initArchive);
   </script>
 </body>
