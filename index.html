@@ -17,6 +17,11 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
+    /* 골드 포인트 텍스트 */
+    .text-gold {
+      color: #fbbf24;
+      text-shadow: 0 2px 10px rgba(251, 191, 36, 0.3);
+    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between relative">
@@ -41,13 +46,15 @@
     <div class="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6">
       <div>
         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-semibold mb-3 border border-blue-400/30">
-          <i class="fa-solid fa-user-shield"></i> Future Convergence Security Crew
+          <i class="fa-solid fa-user-shield"></i> ICT Convergence Security Crew
         </div>
         <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">ICT융합보안크루 아카이브</h1>
-        <p class="mt-2 text-slate-300 text-sm md:text-base">모집부터 성과발표회까지 이어지는 크루 여정과 융합보안 연구 산출물을 한곳에서 확인하세요.</p>
+        <p class="mt-2 text-slate-300 text-sm md:text-base">ICT융합보안크루의 여정을 한곳에서 확인해보세요.</p>
         
-        <!-- 상단 빠른 이동 앵커 바 -->
         <div class="flex items-center gap-3 mt-4">
+          <a href="#stats-section" class="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-xs font-medium text-slate-200 flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-chart-simple text-amber-400"></i> 숫자로 보는 성과
+          </a>
           <a href="#timeline-section" class="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-xs font-medium text-slate-200 flex items-center gap-1.5 transition">
             <i class="fa-solid fa-route text-indigo-400"></i> 활동 여정 보기
           </a>
@@ -70,6 +77,30 @@
   <!-- Main Content Area -->
   <main class="max-w-6xl mx-auto px-6 py-10 flex-grow w-full space-y-16">
 
+    <!-- Section 0: 숫자로 보는 성과 -->
+    <section id="stats-section" class="space-y-6 pt-2">
+      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1e1b4b] via-[#312e81] to-[#4338ca] p-6 sm:p-10 shadow-xl border border-indigo-500/30 text-white">
+        <div class="absolute -top-24 -right-24 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-24 -left-24 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="relative z-10 text-center max-w-2xl mx-auto mb-8">
+          <p class="text-xs sm:text-sm font-semibold tracking-widest text-amber-300 uppercase">
+            <i class="fa-solid fa-sparkles mr-1"></i> 숫자로 보는
+          </p>
+          <h2 id="stats-title" class="text-2xl sm:text-3xl font-extrabold mt-1 text-white tracking-tight">
+            ICT융합보안크루 성과
+          </h2>
+          <div class="w-12 h-1 bg-amber-400 mx-auto mt-3 rounded-full"></div>
+        </div>
+
+        <div id="stats-grid" class="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div class="col-span-full py-8 text-center text-indigo-200 text-xs">
+            <i class="fa-solid fa-spinner fa-spin mr-2"></i> 성과 지표를 불러오는 중입니다...
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Section 1: 크루 활동 타임라인 (Journey) -->
     <section id="timeline-section" class="space-y-6 pt-4">
       <div class="border-b border-slate-200 pb-4">
@@ -79,7 +110,6 @@
         <p class="text-sm text-slate-500 mt-1">모집 공고부터 최종 수료까지의 현장 사진과 주요 일정을 타임라인으로 탐색합니다.</p>
       </div>
 
-      <!-- 타임라인 컨테이너 -->
       <div id="timeline-container" class="relative pl-6 md:pl-8 border-l-2 border-indigo-100 space-y-8 my-4">
         <div class="py-10 text-center text-slate-400 text-sm">
           <i class="fa-solid fa-spinner fa-spin mr-2"></i> 타임라인 데이터를 불러오는 중입니다...
@@ -96,7 +126,6 @@
         <p class="text-sm text-slate-500 mt-1">팀별 심층 프로젝트 결과물, 요약문 및 최종 산출물 아카이브</p>
       </div>
 
-      <!-- 프로젝트 카드 그리드 -->
       <div id="crew-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div class="col-span-full py-10 text-center text-slate-400 text-sm">
           <i class="fa-solid fa-spinner fa-spin mr-2"></i> 프로젝트 데이터를 불러오는 중입니다...
@@ -106,10 +135,13 @@
 
   </main>
 
-  <!-- 우측 하단 플로팅 퀵 메뉴 (Quick Menu) -->
+  <!-- 우측 하단 플로팅 퀵 메뉴 -->
   <aside class="fixed bottom-6 right-6 z-40 flex flex-col gap-2 shadow-xl rounded-2xl p-1.5 bg-white/90 backdrop-blur-md border border-slate-200">
     <a href="#top-header" title="맨 위로 이동" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition text-xs">
       <i class="fa-solid fa-arrow-up"></i>
+    </a>
+    <a href="#stats-section" title="숫자로 보는 성과" class="w-10 h-10 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-600 flex items-center justify-center transition text-xs font-bold">
+      <i class="fa-solid fa-chart-simple"></i>
     </a>
     <a href="#timeline-section" title="활동 여정으로 이동" class="w-10 h-10 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-600 flex items-center justify-center transition text-xs font-bold">
       <i class="fa-solid fa-route"></i>
@@ -173,9 +205,11 @@
   <script>
     const CREW_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSX8ZG1BwtKpvS72k4ut88Nf2gdn9PP78EFKjedj9_s56NuOeYLpsxcmG8L4pTPWjGIuNy0xpTCnsBt/pub?gid=0&single=true&output=csv";
     const ACTIVITY_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSX8ZG1BwtKpvS72k4ut88Nf2gdn9PP78EFKjedj9_s56NuOeYLpsxcmG8L4pTPWjGIuNy0xpTCnsBt/pub?gid=1121022433&single=true&output=csv";
+    const STATS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSX8ZG1BwtKpvS72k4ut88Nf2gdn9PP78EFKjedj9_s56NuOeYLpsxcmG8L4pTPWjGIuNy0xpTCnsBt/pub?gid=2090450298&single=true&output=csv";
 
     let crewData = [];
     let activityData = [];
+    let statsData = [];
     let currentGenFilter = 'ALL';
 
     function formatDriveImageUrl(url) {
@@ -202,15 +236,18 @@
 
     async function initPage() {
       try {
-        const [crewRes, actRes] = await Promise.all([
+        const [crewRes, actRes, statsRes] = await Promise.all([
           fetchSheetData(CREW_CSV_URL),
-          fetchSheetData(ACTIVITY_CSV_URL)
+          fetchSheetData(ACTIVITY_CSV_URL),
+          fetchSheetData(STATS_CSV_URL)
         ]);
 
         crewData = crewRes;
         activityData = actRes;
+        statsData = statsRes;
 
         setupGenFilters();
+        renderStats();
         renderTimeline();
         renderCrewCards();
       } catch (error) {
@@ -220,7 +257,11 @@
 
     function setupGenFilters() {
       const container = document.getElementById('crew-gen-filters');
-      const allGens = [...new Set([...crewData.map(d => d.gen), ...activityData.map(d => d.gen)].filter(Boolean))].sort().reverse();
+      const allGens = [...new Set([
+        ...crewData.map(d => d.gen),
+        ...activityData.map(d => d.gen),
+        ...statsData.map(d => d.gen)
+      ].filter(Boolean))].sort().reverse();
 
       let html = `<button onclick="filterCrew('ALL')" class="crew-filter-btn px-3 py-1 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-sm">전체</button>`;
       allGens.forEach(gen => {
@@ -239,8 +280,44 @@
           btn.className = 'crew-filter-btn px-3 py-1 rounded-lg text-xs font-medium bg-white/20 text-white hover:bg-white/30 transition';
         }
       });
+      renderStats();
       renderTimeline();
       renderCrewCards();
+    }
+
+    // 0. 숫자로 보는 성과 렌더링
+    function renderStats() {
+      const grid = document.getElementById('stats-grid');
+      const titleEl = document.getElementById('stats-title');
+
+      let targetGen = currentGenFilter;
+      if (targetGen === 'ALL') {
+        const availableGens = [...new Set(statsData.map(d => d.gen).filter(Boolean))].sort();
+        targetGen = availableGens[0] || '1기';
+      }
+
+      titleEl.innerHTML = `ICT융합보안크루 <span class="text-amber-300 font-black">${targetGen}</span> 성과`;
+
+      const filtered = statsData.filter(item => item.gen === targetGen);
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div class="col-span-full py-8 text-center text-indigo-200 text-xs">해당 기수의 집계 데이터가 없습니다.</div>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(item => `
+        <div class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/15 hover:bg-white/15 transition flex flex-col justify-between text-center relative group">
+          <div>
+            <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-indigo-500/30 flex items-center justify-center text-amber-300 text-xl border border-indigo-400/30">
+              <i class="${item.icon || 'fa-solid fa-award'}"></i>
+            </div>
+            <p class="text-xs sm:text-sm font-medium text-slate-200 leading-snug">${item.label || ''}</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-white/10">
+            <span class="text-2xl sm:text-3xl font-black text-amber-300 tracking-tight text-gold">${item.value || ''}</span>
+          </div>
+        </div>
+      `).join('');
     }
 
     // 1. 타임라인 렌더링
@@ -259,7 +336,6 @@
         const captions = (item.captions || '').split(/\n+/).map(s => s.trim()).filter(Boolean);
         const firstImg = images[0] || '';
 
-        // 사진이 2장 이상이거나, 사진 설명(captions)이 존재하는 경우에만 '현장 사진 & 설명' 버튼 노출
         const hasDetailedGallery = images.length > 1 || captions.length > 0;
 
         let badgeColor = "bg-indigo-50 text-indigo-700 border-indigo-200";
@@ -284,7 +360,6 @@
                   <h3 class="text-base sm:text-lg font-bold text-slate-900">${item.title || ''}</h3>
                   <p class="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">${item.summary || ''}</p>
                   
-                  <!-- 사진만 단독으로 있을 때는 버튼 숨김 -->
                   ${hasDetailedGallery ? `
                     <div class="mt-4 flex items-center gap-3">
                       <button onclick="openGalleryModal(${originalIndex})" class="px-3.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-lg border border-indigo-200 flex items-center gap-1.5 transition">
@@ -294,7 +369,6 @@
                   ` : ''}
                 </div>
 
-                <!-- 썸네일 영역 (누르면 원본 전체가 보이는 라이트박스 호출) -->
                 ${firstImg ? `
                   <div class="md:col-span-4 cursor-pointer overflow-hidden rounded-xl border border-slate-200 bg-slate-100/70 p-1 flex items-center justify-center group/img relative" 
                        onclick="${hasDetailedGallery ? `openGalleryModal(${originalIndex})` : `openLightbox('${firstImg}', '${encodeURIComponent(item.title || '')}')`}">
@@ -352,7 +426,6 @@
       }).join('');
     }
 
-    // 타임라인 갤러리 모달 오픈
     function openGalleryModal(index) {
       const item = activityData[index];
       if (!item) return;
@@ -391,7 +464,6 @@
       openModal('gallery-modal');
     }
 
-    // 원본 확대 라이트박스 오픈
     function openLightbox(imgUrl, encodedCaption) {
       const caption = decodeURIComponent(encodedCaption || '');
       document.getElementById('lightbox-img').src = imgUrl;
@@ -399,7 +471,6 @@
       openModal('lightbox-modal');
     }
 
-    // 프로젝트 모달 오픈
     function openProjectModal(index) {
       const item = crewData[index];
       if (!item) return;
@@ -451,7 +522,6 @@
 
     function closeModal(modalId) {
       document.getElementById(modalId).classList.add('hidden');
-      // 열려 있는 모달이 더 없으면 배경 스크롤 복원
       const anyOpen = ['detail-modal', 'gallery-modal', 'lightbox-modal'].some(id => !document.getElementById(id).classList.contains('hidden'));
       if (!anyOpen) {
         document.body.style.overflow = '';
