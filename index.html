@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -19,7 +19,7 @@
     }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between relative">
 
   <!-- GNB 헤더 -->
   <div class="bg-white border-b border-slate-200 py-3 px-6 shadow-sm sticky top-0 z-30">
@@ -37,15 +37,26 @@
   </div>
 
   <!-- Hero Banner -->
-  <header class="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white py-12 px-6 shadow-md">
+  <header id="top-header" class="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white py-12 px-6 shadow-md">
     <div class="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6">
       <div>
         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-semibold mb-3 border border-blue-400/30">
           <i class="fa-solid fa-user-shield"></i> Future Convergence Security Crew
         </div>
         <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">ICT융합보안크루 아카이브</h1>
-        <p class="mt-2 text-slate-300 text-sm md:text-base">ICT융합보안크루의 여정을 확인해보세요.</p>
+        <p class="mt-2 text-slate-300 text-sm md:text-base">모집부터 성과발표회까지 이어지는 크루 여정과 융합보안 연구 산출물을 한곳에서 확인하세요.</p>
+        
+        <!-- 상단 빠른 이동 앵커 바 -->
+        <div class="flex items-center gap-3 mt-4">
+          <a href="#timeline-section" class="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-xs font-medium text-slate-200 flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-route text-indigo-400"></i> 활동 여정 보기
+          </a>
+          <a href="#project-section" class="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-xs font-medium text-slate-200 flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-laptop-code text-blue-400"></i> 연구 활동 성과관 보기
+          </a>
+        </div>
       </div>
+
       <!-- 기수 선택 전역 필터 -->
       <div class="bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/20 self-start md:self-auto">
         <span class="text-xs text-slate-300 font-medium block mb-2 px-1">기수 선택</span>
@@ -60,7 +71,7 @@
   <main class="max-w-6xl mx-auto px-6 py-10 flex-grow w-full space-y-16">
 
     <!-- Section 1: 크루 활동 타임라인 (Journey) -->
-    <section class="space-y-6">
+    <section id="timeline-section" class="space-y-6 pt-4">
       <div class="border-b border-slate-200 pb-4">
         <h2 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
           <span class="text-indigo-600"><i class="fa-solid fa-route"></i></span> 크루 활동 여정 (Activity Timeline)
@@ -76,11 +87,11 @@
       </div>
     </section>
 
-    <!-- Section 2: 프로젝트 연구 성과 (Projects) -->
-    <section class="space-y-6">
+    <!-- Section 2: ICT융합보안크루 연구 활동 성과관 (Projects) -->
+    <section id="project-section" class="space-y-6 pt-4">
       <div class="border-b border-slate-200 pb-4">
         <h2 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
-          <span class="text-blue-600"><i class="fa-solid fa-laptop-code"></i></span> 융합보안 프로젝트 연구 성과관
+          <span class="text-blue-600"><i class="fa-solid fa-laptop-code"></i></span> ICT융합보안크루 연구 활동 성과관
         </h2>
         <p class="text-sm text-slate-500 mt-1">팀별 심층 프로젝트 결과물, 요약문 및 최종 산출물 아카이브</p>
       </div>
@@ -95,6 +106,19 @@
 
   </main>
 
+  <!-- 우측 하단 플로팅 퀵 메뉴 (Quick Menu) -->
+  <aside class="fixed bottom-6 right-6 z-40 flex flex-col gap-2 shadow-xl rounded-2xl p-1.5 bg-white/90 backdrop-blur-md border border-slate-200">
+    <a href="#top-header" title="맨 위로 이동" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition text-xs">
+      <i class="fa-solid fa-arrow-up"></i>
+    </a>
+    <a href="#timeline-section" title="활동 여정으로 이동" class="w-10 h-10 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-600 flex items-center justify-center transition text-xs font-bold">
+      <i class="fa-solid fa-route"></i>
+    </a>
+    <a href="#project-section" title="연구 성과관으로 이동" class="w-10 h-10 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-600 flex items-center justify-center transition text-xs font-bold">
+      <i class="fa-solid fa-laptop-code"></i>
+    </a>
+  </aside>
+
   <!-- 모달 1: 프로젝트 상세 보기 모달 -->
   <div id="detail-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-xl w-full p-6 sm:p-8 shadow-2xl relative animate-in fade-in zoom-in duration-200">
@@ -108,7 +132,6 @@
   <!-- 모달 2: 타임라인 활동 갤러리 모달 -->
   <div id="gallery-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden shadow-2xl flex flex-col relative animate-in fade-in zoom-in duration-200">
-      <!-- 모달 헤더 -->
       <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
         <div>
           <span id="gallery-badge" class="px-2 py-0.5 rounded text-[11px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200"></span>
@@ -118,8 +141,18 @@
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
-      <!-- 이미지 & 캡션 스크롤 영역 -->
       <div id="gallery-body" class="p-6 overflow-y-auto space-y-6 flex-grow"></div>
+    </div>
+  </div>
+
+  <!-- 모달 3: 원본 사진 단독 확대 뷰어 (Lightbox) -->
+  <div id="lightbox-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4" onclick="closeModal('lightbox-modal')">
+    <button onclick="closeModal('lightbox-modal')" class="absolute top-5 right-5 text-white/70 hover:text-white text-2xl w-10 h-10 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 transition">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+    <div class="max-w-5xl max-h-[85vh] flex flex-col items-center justify-center p-2" onclick="event.stopPropagation()">
+      <img id="lightbox-img" src="" alt="원본 사진" class="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl" />
+      <p id="lightbox-caption" class="text-white/80 text-xs sm:text-sm mt-3 text-center px-4"></p>
     </div>
   </div>
 
@@ -145,15 +178,11 @@
     let activityData = [];
     let currentGenFilter = 'ALL';
 
-    // 구글 드라이브 링크를 직접 렌더링 가능한 이미지 URL로 변환하는 함수
     function formatDriveImageUrl(url) {
       if (!url) return '';
       const cleanUrl = url.trim();
-      
-      // 구글 드라이브 URL 패턴 매칭 (file/d/ID 또는 id=ID)
       const match = cleanUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || cleanUrl.match(/id=([a-zA-Z0-9_-]+)/);
       if (match && match[1]) {
-        // 브라우저 렌더링에 최적화된 구글 썸네일 고화질 링크 반환
         return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1200`;
       }
       return cleanUrl;
@@ -173,13 +202,13 @@
 
     async function initPage() {
       try {
-        crewData = await fetchSheetData(CREW_CSV_URL);
+        const [crewRes, actRes] = await Promise.all([
+          fetchSheetData(CREW_CSV_URL),
+          fetchSheetData(ACTIVITY_CSV_URL)
+        ]);
 
-        if (ACTIVITY_CSV_URL.includes("여기에_")) {
-          loadDefaultTimelineData();
-        } else {
-          activityData = await fetchSheetData(ACTIVITY_CSV_URL);
-        }
+        crewData = crewRes;
+        activityData = actRes;
 
         setupGenFilters();
         renderTimeline();
@@ -189,49 +218,6 @@
       }
     }
 
-    // 기본 타임라인 데모 데이터 (URL 교체 전 임시 노출용)
-    function loadDefaultTimelineData() {
-      activityData = [
-        {
-          gen: "3기",
-          step: "모집안내",
-          date: "2026-03-15 ~ 04-10",
-          title: "제3기 ICT융합보안크루 신규 모집",
-          summary: "전국 정보보호·컴퓨터공학 전공 대학생을 대상으로 스마트제조, 미래차, AI 융합보안 트랙 크루원을 모집했습니다.",
-          images: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800",
-          captions: "3기 공식 모집 공식 포스터 및 지원 안내 카드뉴스"
-        },
-        {
-          gen: "3기",
-          step: "발대식/OT",
-          date: "2026-05-06",
-          title: "제3기 발대식 및 위촉식",
-          summary: "선발 크루원 위촉장 수여, 보안 윤리 서약 및 멘토-멘티 팀 빌딩을 온·오프라인 병행으로 진행했습니다.",
-          images: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800\nhttps://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800",
-          captions: "크루 임명장 수여식 현장\n트랙별 전담 멘토 네트워킹 세션"
-        },
-        {
-          gen: "3기",
-          step: "중간보고회",
-          date: "2026-08-12",
-          title: "중간 프로젝트 진척 점검 및 현장 멘토링",
-          summary: "트랙별 프로토타입 개발 현황 점검 및 산업계 전문가 1:1 기술 피드백 세션을 가졌습니다.",
-          images: "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800",
-          captions: "산업계 멘토링 진행 및 취약점 분석 피드백"
-        },
-        {
-          gen: "2기",
-          step: "성과보고회",
-          date: "2025-11-28",
-          title: "제2기 최종 성과보고회 및 수료식",
-          summary: "1년간의 연구 산출물 전시, 우수 과제 발표회 및 KISIA 수료증 수여식이 진행되었습니다.",
-          images: "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800",
-          captions: "2기 우수 프로젝트 시상식 기념 촬영"
-        }
-      ];
-    }
-
-    // 전역 기수 필터 생성
     function setupGenFilters() {
       const container = document.getElementById('crew-gen-filters');
       const allGens = [...new Set([...crewData.map(d => d.gen), ...activityData.map(d => d.gen)].filter(Boolean))].sort().reverse();
@@ -257,7 +243,7 @@
       renderCrewCards();
     }
 
-    // 1. 타임라인 렌더링 (구글 드라이브 이미지 변환 적용)
+    // 1. 타임라인 렌더링
     function renderTimeline() {
       const container = document.getElementById('timeline-container');
       const filtered = currentGenFilter === 'ALL' ? activityData : activityData.filter(item => item.gen === currentGenFilter);
@@ -267,19 +253,18 @@
         return;
       }
 
-      container.innerHTML = filtered.map((item, idx) => {
+      container.innerHTML = filtered.map((item) => {
         const originalIndex = activityData.indexOf(item);
-        // 이미지 분리 및 드라이브 링크 변환
-        const images = (item.images || '')
-          .split(/[\n,]+/)
-          .map(s => formatDriveImageUrl(s))
-          .filter(Boolean);
-
+        const images = (item.images || '').split(/[\n,]+/).map(s => formatDriveImageUrl(s)).filter(Boolean);
+        const captions = (item.captions || '').split(/\n+/).map(s => s.trim()).filter(Boolean);
         const firstImg = images[0] || '';
 
+        // 사진이 2장 이상이거나, 사진 설명(captions)이 존재하는 경우에만 '현장 사진 & 설명' 버튼 노출
+        const hasDetailedGallery = images.length > 1 || captions.length > 0;
+
         let badgeColor = "bg-indigo-50 text-indigo-700 border-indigo-200";
-        if (item.step.includes("모집")) badgeColor = "bg-amber-50 text-amber-700 border-amber-200";
-        if (item.step.includes("성과")) badgeColor = "bg-emerald-50 text-emerald-700 border-emerald-200";
+        if ((item.step || '').includes("모집")) badgeColor = "bg-amber-50 text-amber-700 border-amber-200";
+        if ((item.step || '').includes("성과")) badgeColor = "bg-emerald-50 text-emerald-700 border-emerald-200";
 
         return `
           <div class="relative group">
@@ -288,32 +273,37 @@
             <div class="bg-white rounded-2xl border border-slate-200 p-5 hover:shadow-md transition-shadow">
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
                 <div class="flex items-center gap-2">
-                  <span class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">${item.gen}</span>
-                  <span class="px-2.5 py-0.5 rounded-md text-xs font-bold border ${badgeColor}">${item.step}</span>
+                  <span class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">${item.gen || ''}</span>
+                  <span class="px-2.5 py-0.5 rounded-md text-xs font-bold border ${badgeColor}">${item.step || ''}</span>
                 </div>
-                <span class="text-xs font-medium text-slate-400"><i class="fa-regular fa-calendar mr-1"></i>${item.date}</span>
+                <span class="text-xs font-medium text-slate-400"><i class="fa-regular fa-calendar mr-1"></i>${item.date || ''}</span>
               </div>
 
               <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
                 <div class="${firstImg ? 'md:col-span-8' : 'md:col-span-12'}">
-                  <h3 class="text-base sm:text-lg font-bold text-slate-900">${item.title}</h3>
+                  <h3 class="text-base sm:text-lg font-bold text-slate-900">${item.title || ''}</h3>
                   <p class="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">${item.summary || ''}</p>
                   
-                  <div class="mt-4 flex items-center gap-3">
-                    ${images.length > 0 ? `
+                  <!-- 사진만 단독으로 있을 때는 버튼 숨김 -->
+                  ${hasDetailedGallery ? `
+                    <div class="mt-4 flex items-center gap-3">
                       <button onclick="openGalleryModal(${originalIndex})" class="px-3.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-lg border border-indigo-200 flex items-center gap-1.5 transition">
                         <i class="fa-solid fa-images"></i> 현장 사진 & 설명 (${images.length}장)
                       </button>
-                    ` : ''}
-                  </div>
+                    </div>
+                  ` : ''}
                 </div>
 
+                <!-- 썸네일 영역 (누르면 원본 전체가 보이는 라이트박스 호출) -->
                 ${firstImg ? `
-                  <div class="md:col-span-4 cursor-pointer overflow-hidden rounded-xl border border-slate-100 group-hover:border-indigo-200 transition" onclick="openGalleryModal(${originalIndex})">
-                    <div class="relative aspect-video bg-slate-100">
-                      <img src="${firstImg}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.src='https://placehold.co/600x400?text=Activity+Photo'" />
-                      <div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition">
-                        <i class="fa-solid fa-magnifying-glass-plus text-xl"></i>
+                  <div class="md:col-span-4 cursor-pointer overflow-hidden rounded-xl border border-slate-200 bg-slate-100/70 p-1 flex items-center justify-center group/img relative" 
+                       onclick="${hasDetailedGallery ? `openGalleryModal(${originalIndex})` : `openLightbox('${firstImg}', '${encodeURIComponent(item.title || '')}')`}">
+                    <div class="relative w-full h-44 sm:h-36 flex items-center justify-center">
+                      <img src="${firstImg}" alt="${item.title || ''}" class="max-w-full max-h-full object-contain rounded-lg group-hover/img:scale-105 transition duration-300" onerror="this.src='https://placehold.co/600x400?text=Photo'" />
+                      <div class="absolute inset-0 bg-slate-950/25 opacity-0 group-hover/img:opacity-100 rounded-lg flex items-center justify-center text-white transition">
+                        <span class="text-xs bg-slate-900/80 px-2.5 py-1 rounded-full flex items-center gap-1">
+                          <i class="fa-solid fa-expand text-[10px]"></i> ${hasDetailedGallery ? '갤러리 열기' : '원본 보기'}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -362,33 +352,32 @@
       }).join('');
     }
 
-    // 타임라인 갤러리 모달 오픈 (구글 드라이브 이미지 변환 적용)
+    // 타임라인 갤러리 모달 오픈
     function openGalleryModal(index) {
       const item = activityData[index];
       if (!item) return;
 
-      document.getElementById('gallery-badge').innerText = `${item.gen} · ${item.step}`;
-      document.getElementById('gallery-title').innerText = item.title;
+      document.getElementById('gallery-badge').innerText = `${item.gen || ''} · ${item.step || ''}`;
+      document.getElementById('gallery-title').innerText = item.title || '';
 
-      // 이미지 링크 변환
-      const images = (item.images || '')
-        .split(/[\n,]+/)
-        .map(s => formatDriveImageUrl(s))
-        .filter(Boolean);
-
+      const images = (item.images || '').split(/[\n,]+/).map(s => formatDriveImageUrl(s)).filter(Boolean);
       const captions = (item.captions || '').split(/\n+/).map(s => s.trim());
 
       const body = document.getElementById('gallery-body');
       body.innerHTML = `
         <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 text-xs text-slate-600 leading-relaxed mb-6">
-          <span class="font-semibold text-slate-800">일시: ${item.date}</span><br />
+          <span class="font-semibold text-slate-800">일시: ${item.date || '-'}</span><br />
           ${item.summary || ''}
         </div>
         <div class="space-y-8">
           ${images.map((img, i) => `
             <div class="space-y-2">
-              <div class="rounded-xl overflow-hidden border border-slate-200 bg-slate-100">
-                <img src="${img}" alt="활동 사진" class="w-full h-auto object-cover max-h-[500px]" onerror="this.src='https://placehold.co/800x500?text=Photo+Not+Found'" />
+              <div class="rounded-xl overflow-hidden border border-slate-200 bg-slate-100 p-2 flex items-center justify-center cursor-pointer group/modalimg relative"
+                   onclick="openLightbox('${img}', '${encodeURIComponent(captions[i] || item.title || '')}')">
+                <img src="${img}" alt="활동 사진" class="w-full h-auto max-h-[500px] object-contain rounded-lg group-hover/modalimg:scale-[1.01] transition duration-200" onerror="this.src='https://placehold.co/800x500?text=Photo'" />
+                <span class="absolute bottom-4 right-4 bg-slate-900/80 text-white text-[11px] px-2.5 py-1 rounded-full opacity-0 group-hover/modalimg:opacity-100 transition flex items-center gap-1">
+                  <i class="fa-solid fa-expand text-[10px]"></i> 원본 확대
+                </span>
               </div>
               <p class="text-xs sm:text-sm text-slate-600 px-1 leading-relaxed flex items-start gap-1.5">
                 <i class="fa-solid fa-camera text-slate-400 text-xs mt-1"></i>
@@ -400,6 +389,14 @@
       `;
 
       openModal('gallery-modal');
+    }
+
+    // 원본 확대 라이트박스 오픈
+    function openLightbox(imgUrl, encodedCaption) {
+      const caption = decodeURIComponent(encodedCaption || '');
+      document.getElementById('lightbox-img').src = imgUrl;
+      document.getElementById('lightbox-caption').innerText = caption;
+      openModal('lightbox-modal');
     }
 
     // 프로젝트 모달 오픈
@@ -454,7 +451,11 @@
 
     function closeModal(modalId) {
       document.getElementById(modalId).classList.add('hidden');
-      document.body.style.overflow = '';
+      // 열려 있는 모달이 더 없으면 배경 스크롤 복원
+      const anyOpen = ['detail-modal', 'gallery-modal', 'lightbox-modal'].some(id => !document.getElementById(id).classList.contains('hidden'));
+      if (!anyOpen) {
+        document.body.style.overflow = '';
+      }
     }
 
     window.addEventListener('click', (e) => {
@@ -466,8 +467,9 @@
 
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        closeModal('detail-modal');
+        closeModal('lightbox-modal');
         closeModal('gallery-modal');
+        closeModal('detail-modal');
       }
     });
 
