@@ -17,7 +17,6 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
-    /* 골드 포인트 텍스트 */
     .text-gold {
       color: #fbbf24;
       text-shadow: 0 2px 10px rgba(251, 191, 36, 0.3);
@@ -90,6 +89,10 @@
           <h2 id="stats-title" class="text-2xl sm:text-3xl font-extrabold mt-1 text-white tracking-tight">
             ICT융합보안크루 성과
           </h2>
+          <!-- 💡 기수별 맞춤 서브 멘트 -->
+          <p id="stats-slogan" class="text-sm sm:text-base text-indigo-200 mt-2 font-medium tracking-wide">
+            내일의 융합보안을 이끌 대학생 보안 크루
+          </p>
           <div class="w-12 h-1 bg-amber-400 mx-auto mt-3 rounded-full"></div>
         </div>
 
@@ -285,10 +288,11 @@
       renderCrewCards();
     }
 
-    // 0. 숫자로 보는 성과 렌더링
+    // 0. 숫자로 보는 성과 렌더링 (slogan 반영)
     function renderStats() {
       const grid = document.getElementById('stats-grid');
       const titleEl = document.getElementById('stats-title');
+      const sloganEl = document.getElementById('stats-slogan');
 
       let targetGen = currentGenFilter;
       if (targetGen === 'ALL') {
@@ -299,6 +303,11 @@
       titleEl.innerHTML = `ICT융합보안크루 <span class="text-amber-300 font-black">${targetGen}</span> 성과`;
 
       const filtered = statsData.filter(item => item.gen === targetGen);
+
+      // 슬로건 텍스트 바인딩
+      const currentSlogan = filtered.find(item => item.slogan && item.slogan.trim() !== '')?.slogan 
+                            || "내일의 융합보안을 이끌 대학생 보안 크루";
+      sloganEl.innerText = currentSlogan;
 
       if (filtered.length === 0) {
         grid.innerHTML = `<div class="col-span-full py-8 text-center text-indigo-200 text-xs">해당 기수의 집계 데이터가 없습니다.</div>`;
