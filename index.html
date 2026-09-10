@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="no-referrer" />
   <title>ICT융합보안크루 아카이브</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -43,7 +44,7 @@
           <i class="fa-solid fa-user-shield"></i> Future Convergence Security Crew
         </div>
         <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">ICT융합보안크루 아카이브</h1>
-        <p class="mt-2 text-slate-300 text-sm md:text-base">ICT융합보안크루의 여정을 확인해보세요.</p>
+        <p class="mt-2 text-slate-300 text-sm md:text-base">모집부터 성과발표회까지 이어지는 크루 여정과 융합보안 연구 산출물을 한곳에서 확인하세요.</p>
       </div>
       <!-- 기수 선택 전역 필터 -->
       <div class="bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/20 self-start md:self-auto">
@@ -138,11 +139,26 @@
   <!-- ========================================== -->
   <script>
     const CREW_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSX8ZG1BwtKpvS72k4ut88Nf2gdn9PP78EFKjedj9_s56NuOeYLpsxcmG8L4pTPWjGIuNy0xpTCnsBt/pub?gid=0&single=true&output=csv";
-    const ACTIVITY_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSX8ZG1BwtKpvS72k4ut88Nf2gdn9PP78EFKjedj9_s56NuOeYLpsxcmG8L4pTPWjGIuNy0xpTCnsBt/pub?gid=1121022433&single=true&output=csv";
+    // ⚠️ 구글 시트 activity 탭의 웹 게시 CSV URL을 아래에 넣어주세요
+    const ACTIVITY_CSV_URL = "여기에_ACTIVITY_탭_CSV_URL을_붙여넣으세요";
 
     let crewData = [];
     let activityData = [];
     let currentGenFilter = 'ALL';
+
+    // 구글 드라이브 링크를 직접 렌더링 가능한 이미지 URL로 변환하는 함수
+    function formatDriveImageUrl(url) {
+      if (!url) return '';
+      const cleanUrl = url.trim();
+      
+      // 구글 드라이브 URL 패턴 매칭 (file/d/ID 또는 id=ID)
+      const match = cleanUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || cleanUrl.match(/id=([a-zA-Z0-9_-]+)/);
+      if (match && match[1]) {
+        // 브라우저 렌더링에 최적화된 구글 썸네일 고화질 링크 반환
+        return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1200`;
+      }
+      return cleanUrl;
+    }
 
     function fetchSheetData(url) {
       return new Promise((resolve, reject) => {
@@ -174,7 +190,7 @@
       }
     }
 
-    // 기본 타임라인 데모 데이터 (시트 URL 교체 전 기본 노출용)
+    // 기본 타임라인 데모 데이터 (URL 교체 전 임시 노출용)
     function loadDefaultTimelineData() {
       activityData = [
         {
@@ -242,7 +258,7 @@
       renderCrewCards();
     }
 
-    // 1. 타임라인 렌더링
+    // 1. 타임라인 렌더링 (구글 드라이브 이미지 변환 적용)
     function renderTimeline() {
       const container = document.getElementById('timeline-container');
       const filtered = currentGenFilter === 'ALL' ? activityData : activityData.filter(item => item.gen === currentGenFilter);
@@ -254,17 +270,20 @@
 
       container.innerHTML = filtered.map((item, idx) => {
         const originalIndex = activityData.indexOf(item);
-        const images = (item.images || '').split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+        // 이미지 분리 및 드라이브 링크 변환
+        const images = (item.images || '')
+          .split(/[\n,]+/)
+          .map(s => formatDriveImageUrl(s))
+          .filter(Boolean);
+
         const firstImg = images[0] || '';
 
-        // 단계별 배지 색상
         let badgeColor = "bg-indigo-50 text-indigo-700 border-indigo-200";
         if (item.step.includes("모집")) badgeColor = "bg-amber-50 text-amber-700 border-amber-200";
         if (item.step.includes("성과")) badgeColor = "bg-emerald-50 text-emerald-700 border-emerald-200";
 
         return `
           <div class="relative group">
-            <!-- 타임라인 원형 마커 -->
             <div class="absolute -left-[31px] md:-left-[39px] top-1.5 w-4 h-4 rounded-full bg-white border-4 border-indigo-600 group-hover:scale-125 transition-transform shadow-sm"></div>
 
             <div class="bg-white rounded-2xl border border-slate-200 p-5 hover:shadow-md transition-shadow">
@@ -344,7 +363,7 @@
       }).join('');
     }
 
-    // 타임라인 갤러리 모달 오픈
+    // 타임라인 갤러리 모달 오픈 (구글 드라이브 이미지 변환 적용)
     function openGalleryModal(index) {
       const item = activityData[index];
       if (!item) return;
@@ -352,7 +371,12 @@
       document.getElementById('gallery-badge').innerText = `${item.gen} · ${item.step}`;
       document.getElementById('gallery-title').innerText = item.title;
 
-      const images = (item.images || '').split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+      // 이미지 링크 변환
+      const images = (item.images || '')
+        .split(/[\n,]+/)
+        .map(s => formatDriveImageUrl(s))
+        .filter(Boolean);
+
       const captions = (item.captions || '').split(/\n+/).map(s => s.trim());
 
       const body = document.getElementById('gallery-body');
@@ -424,7 +448,6 @@
       openModal('detail-modal');
     }
 
-    // 모달 공통 유틸
     function openModal(modalId) {
       document.getElementById(modalId).classList.remove('hidden');
       document.body.style.overflow = 'hidden';
