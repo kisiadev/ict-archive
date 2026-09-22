@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="referrer" content="no-referrer" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
   <title>ICT Convergence Security Event Archive</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -42,7 +42,7 @@
     </div>
   </div>
 
-  <!-- Hero Section (index.html과 동일한 폰트 및 스타일 적용) -->
+  <!-- Hero Section -->
   <header id="top-header" class="bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-950 text-white py-10 sm:py-12 px-4 sm:px-6 shadow-md">
     <div class="max-w-6xl mx-auto flex flex-col lg:flex-row lg:items-center justify-between gap-6 lg:gap-10">
       <div class="w-full">
@@ -118,6 +118,7 @@
       return cleanUrl;
     }
 
+    // 유튜브 153 오류 방지를 위해 nocookie 도메인 적용
     function getYoutubeEmbedUrl(url) {
       if (!url) return '';
       const cleanUrl = url.trim();
@@ -129,7 +130,7 @@
       } else if (cleanUrl.includes('embed/')) {
         videoId = cleanUrl.split('embed/')[1]?.split('?')[0];
       }
-      return videoId ? `https://www.youtube.com/embed/${videoId}` : '';
+      return videoId ? `https://www.youtube-nocookie.com/embed/${videoId}` : '';
     }
 
     function fetchSheetData(url) {
