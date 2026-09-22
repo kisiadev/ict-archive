@@ -44,40 +44,63 @@
 
   <!-- Hero Section -->
   <header id="top-header" class="bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-950 text-white py-10 sm:py-12 px-4 sm:px-6 shadow-md">
-    <div class="max-w-6xl mx-auto flex flex-col lg:flex-row lg:items-center justify-between gap-6 lg:gap-10">
-      <div class="w-full">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] sm:text-xs font-semibold mb-3 border border-emerald-400/30">
-          <i class="fa-solid fa-file-shield"></i> ICT Convergence Security Event Archive
-        </div>
-        <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight break-keep">
-          ICT Convergence Security Event Archive
-        </h1>
+    <div class="max-w-6xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] sm:text-xs font-semibold mb-3 border border-emerald-400/30">
+        <i class="fa-solid fa-file-shield"></i> ICT Convergence Security Event Archive
       </div>
-
-      <!-- 회차 선택 전역 필터 -->
-      <div class="bg-white/10 backdrop-blur-md p-3 sm:p-4 rounded-2xl border border-white/20 w-full lg:w-auto shrink-0 overflow-x-auto">
-        <span class="text-[11px] sm:text-xs text-slate-300 font-medium block mb-2 px-1">행사 회차 선택</span>
-        <div class="flex items-center gap-1.5 whitespace-nowrap" id="seminar-round-filters"></div>
-      </div>
+      <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight break-keep">
+        ICT Convergence Security Event Archive
+      </h1>
     </div>
   </header>
 
-  <!-- Main Content -->
-  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-10 flex-grow w-full space-y-8" id="seminar-main-container">
-    <div class="py-20 text-center text-slate-400 text-sm">
-      <i class="fa-solid fa-spinner fa-spin mr-2"></i> 세미나 정보를 불러오는 중입니다...
+  <!-- Main Content (2단 구조: 왼쪽 본문, 오른쪽 연도별 세로 사이드바) -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-10 flex-grow w-full">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- 왼쪽: 메인 컨텐츠 영역 -->
+      <div id="seminar-main-container" class="lg:col-span-9 space-y-8">
+        <div class="py-20 text-center text-slate-400 text-sm">
+          <i class="fa-solid fa-spinner fa-spin mr-2"></i> 세미나 정보를 불러오는 중입니다...
+        </div>
+      </div>
+
+      <!-- 오른쪽: 연도별 세로형 사이드 네비게이션 -->
+      <aside class="lg:col-span-3 lg:sticky lg:top-24 space-y-3">
+        <div class="border-l-2 border-slate-300 pl-4 space-y-2" id="seminar-round-filters">
+          <!-- 동적 생성되는 연도 목록 -->
+        </div>
+      </aside>
+
     </div>
   </main>
 
-  <!-- 우측 하단 플로팅 퀵 메뉴 -->
+  <!-- 우측 하단 플로팅 퀵 메뉴 (위로가기 / 아래로가기) -->
   <aside class="fixed bottom-6 right-6 z-40 flex flex-col gap-2 shadow-xl rounded-2xl p-1.5 bg-white/90 backdrop-blur-md border border-slate-200">
     <a href="#top-header" title="맨 위로 이동" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition text-xs">
       <i class="fa-solid fa-arrow-up"></i>
     </a>
-    <a href="index.html" title="크루 활동관으로 이동" class="w-10 h-10 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-600 flex items-center justify-center transition text-xs font-bold">
-      <i class="fa-solid fa-laptop-code"></i>
+    <a href="#footer-section" title="맨 아래로 이동" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition text-xs">
+      <i class="fa-solid fa-arrow-down"></i>
     </a>
   </aside>
+
+  <!-- PDF 모달 뷰어 -->
+  <div id="pdf-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-4xl w-full h-[85vh] overflow-hidden shadow-2xl flex flex-col relative animate-in fade-in zoom-in duration-200">
+      <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+        <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-file-pdf text-emerald-600"></i> 발표자료 미리보기
+        </h3>
+        <button onclick="closePdfModal()" class="text-slate-400 hover:text-slate-600 text-lg w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-200 transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div id="pdf-modal-body" class="flex-grow w-full bg-slate-100 flex items-center justify-center">
+        <!-- 동적 iframe 삽입 -->
+      </div>
+    </div>
+  </div>
 
   <!-- 원본 사진 확대 뷰어 (Lightbox) -->
   <div id="lightbox-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4" onclick="closeLightbox()">
@@ -91,7 +114,7 @@
   </div>
 
   <!-- Footer -->
-  <footer class="border-t border-slate-200 bg-white py-8 px-6 text-xs text-slate-500 mt-16">
+  <footer id="footer-section" class="border-t border-slate-200 bg-white py-8 px-6 text-xs text-slate-500 mt-16">
     <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
       <div class="flex items-center gap-4 opacity-75">
         <img src="logo-kisia.png" alt="한국정보보호산업협회" class="h-6 object-contain grayscale" />
@@ -118,7 +141,17 @@
       return cleanUrl;
     }
 
-    // 유튜브 153 오류 방지를 위해 nocookie 도메인 적용
+    // PDF 뷰어 링크 변환 함수 (구글 드라이브 링크를 임베드 뷰어 형태로 변환)
+    function getPdfEmbedUrl(url) {
+      if (!url) return '';
+      const cleanUrl = url.trim();
+      const match = cleanUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || cleanUrl.match(/id=([a-zA-Z0-9_-]+)/);
+      if (match && match[1]) {
+        return `https://drive.google.com/file/d/${match[1]}/preview`;
+      }
+      return cleanUrl;
+    }
+
     function getYoutubeEmbedUrl(url) {
       if (!url) return '';
       const cleanUrl = url.trim();
@@ -171,10 +204,11 @@
       renderSeminarDetail(currentRound);
     }
 
+    // 오른쪽 세로 사이드바 연도별 버튼 렌더링 (비활성화 연도 투명도 및 전환 애니메이션 적용)
     function renderRoundButtons(rounds) {
       const container = document.getElementById('seminar-round-filters');
       container.innerHTML = rounds.map(r => `
-        <button onclick="switchRound('${r}')" class="round-filter-btn px-3.5 py-1.5 rounded-lg text-xs font-bold transition ${r === currentRound ? 'bg-emerald-600 text-white shadow-sm' : 'bg-white/20 text-white hover:bg-white/30'}">
+        <button onclick="switchRound('${r}')" class="round-filter-btn block w-full text-left py-1.5 px-2 rounded-lg text-sm font-semibold transition-all duration-300 ${r === currentRound ? 'text-slate-900 font-bold bg-slate-200/60 translate-x-1 shadow-sm' : 'text-slate-400 hover:text-slate-600 opacity-60 hover:opacity-100'}">
           ${r}
         </button>
       `).join('');
@@ -185,9 +219,9 @@
       const buttons = document.querySelectorAll('.round-filter-btn');
       buttons.forEach(btn => {
         if (btn.innerText.trim() === round) {
-          btn.className = 'round-filter-btn px-3.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 text-white shadow-sm';
+          btn.className = 'round-filter-btn block w-full text-left py-1.5 px-2 rounded-lg text-sm font-semibold transition-all duration-300 text-slate-900 font-bold bg-slate-200/60 translate-x-1 shadow-sm';
         } else {
-          btn.className = 'round-filter-btn px-3.5 py-1.5 rounded-lg text-xs font-medium bg-white/20 text-white hover:bg-white/30 transition';
+          btn.className = 'round-filter-btn block w-full text-left py-1.5 px-2 rounded-lg text-sm font-semibold transition-all duration-300 text-slate-400 hover:text-slate-600 opacity-60 hover:opacity-100';
         }
       });
       renderSeminarDetail(round);
@@ -218,7 +252,7 @@
 
       container.innerHTML = `
         <!-- 1. 행사명 박스 -->
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6 text-center">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6 text-center transition-all duration-300">
           <span class="text-xs font-bold text-emerald-600 uppercase tracking-widest block mb-1">${round}</span>
           <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">${eventTitle}</h2>
         </div>
@@ -252,8 +286,8 @@
 
         <!-- 3. 프로그램 안내 (타임테이블) -->
         <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden p-6 sm:p-8 space-y-6">
-          <div class="border-b border-slate-100 pb-4">
-            <h3 class="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
+          <div class="border-b border-slate-100 pb-4 text-center">
+            <h3 class="text-lg sm:text-xl font-bold text-slate-900 flex items-center justify-center gap-2">
               <span class="text-emerald-600"><i class="fa-solid fa-timeline"></i></span> 프로그램 안내
             </h3>
           </div>
@@ -262,23 +296,23 @@
             <table class="w-full text-center text-sm text-slate-600">
               <thead class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase">
                 <tr>
-                  <th scope="col" class="py-3.5 px-4">시간</th>
-                  <th scope="col" class="py-3.5 px-4">세션명</th>
-                  <th scope="col" class="py-3.5 px-4">연사</th>
+                  <th scope="col" class="py-3.5 px-4 text-center">시간</th>
+                  <th scope="col" class="py-3.5 px-4 text-center">세션명</th>
+                  <th scope="col" class="py-3.5 px-4 text-center">연사</th>
                   <th scope="col" class="py-3.5 px-4 text-center">발표자료</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-100">
                 ${matches.map(item => item.sessionTitle ? `
                   <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="py-4 px-4 whitespace-nowrap text-xs font-bold text-slate-700">${item.time || '-'}</td>
-                    <td class="py-4 px-4 font-semibold text-slate-900">${item.sessionTitle}</td>
-                    <td class="py-4 px-4 text-xs text-slate-600">${item.speaker || '-'}</td>
+                    <td class="py-4 px-4 whitespace-nowrap text-xs font-bold text-slate-700 text-center">${item.time || '-'}</td>
+                    <td class="py-4 px-4 font-semibold text-slate-900 text-center">${item.sessionTitle}</td>
+                    <td class="py-4 px-4 text-xs text-slate-600 text-center">${item.speaker || '-'}</td>
                     <td class="py-4 px-4 text-center whitespace-nowrap">
                       ${item.pdfUrl && item.pdfUrl.trim() !== '' && item.pdfUrl !== '#' ? `
-                        <a href="${item.pdfUrl}" target="_blank" title="발표자료 PDF 다운로드/보기" class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition inline-flex items-center justify-center shadow-sm">
+                        <button onclick="openPdfModal('${item.pdfUrl}')" title="발표자료 PDF 모달보기" class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition inline-flex items-center justify-center shadow-sm mx-auto">
                           <i class="fa-solid fa-file-pdf text-sm"></i>
-                        </a>
+                        </button>
                       ` : '<span class="text-xs text-slate-300">-</span>'}
                     </td>
                   </tr>
@@ -338,6 +372,26 @@
       `;
     }
 
+    // PDF 모달 제어 함수
+    function openPdfModal(pdfUrl) {
+      const modal = document.getElementById('pdf-modal');
+      const body = document.getElementById('pdf-modal-body');
+      const embedUrl = getPdfEmbedUrl(pdfUrl);
+
+      body.innerHTML = `
+        <iframe src="${embedUrl}" class="w-full h-full border-0" allowfullscreen></iframe>
+      `;
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closePdfModal() {
+      const modal = document.getElementById('pdf-modal');
+      modal.classList.add('hidden');
+      document.getElementById('pdf-modal-body').innerHTML = '';
+      document.body.style.overflow = '';
+    }
+
     function scrollGallery(direction) {
       const slider = document.getElementById('gallery-slider');
       if (slider) {
@@ -359,7 +413,10 @@
     }
 
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'Escape') {
+        closeLightbox();
+        closePdfModal();
+      }
     });
 
     window.addEventListener('DOMContentLoaded', initSeminarArchive);
