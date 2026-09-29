@@ -80,6 +80,9 @@
     <a href="#top-header" title="맨 위로 이동" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition text-xs">
       <i class="fa-solid fa-arrow-up"></i>
     </a>
+    <a href="./" title="크루 활동관으로 이동" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition text-xs">
+      <i class="fa-solid fa-laptop-code"></i>
+    </a>
     <a href="#footer-section" title="맨 아래로 이동" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition text-xs">
       <i class="fa-solid fa-arrow-down"></i>
     </a>
@@ -141,7 +144,6 @@
       return cleanUrl;
     }
 
-    // PDF 뷰어 링크 변환 함수 (구글 드라이브 링크를 임베드 뷰어 형태로 변환)
     function getPdfEmbedUrl(url) {
       if (!url) return '';
       const cleanUrl = url.trim();
@@ -204,7 +206,6 @@
       renderSeminarDetail(currentRound);
     }
 
-    // 오른쪽 세로 사이드바 연도별 버튼 렌더링 (비활성화 연도 투명도 및 전환 애니메이션 적용)
     function renderRoundButtons(rounds) {
       const container = document.getElementById('seminar-round-filters');
       container.innerHTML = rounds.map(r => `
@@ -276,7 +277,17 @@
               <div class="text-xs sm:text-sm text-slate-600 leading-relaxed whitespace-pre-line">
                 ${overviewText}
               </div>
+
+              <!-- 참가신청 버튼 (applyUrl이 있을 때만 노출) -->
+              ${mainInfo.applyUrl && mainInfo.applyUrl.trim() !== '' && mainInfo.applyUrl !== '#' ? `
+                <div class="mt-6 pt-4 border-t border-slate-100">
+                  <a href="${mainInfo.applyUrl}" target="_blank" rel="noopener noreferrer" class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-pen-to-square"></i> 행사 참가신청하기
+                  </a>
+                </div>
+              ` : ''}
             </div>
+
             <div class="mt-6 pt-4 border-t border-slate-100 text-[11px] text-slate-400 flex items-center justify-between">
               <span>KISIA 한국정보보호산업협회</span>
               <span>ICT융합산업보안 인력양성</span>
@@ -372,7 +383,6 @@
       `;
     }
 
-    // PDF 모달 제어 함수
     function openPdfModal(pdfUrl) {
       const modal = document.getElementById('pdf-modal');
       const body = document.getElementById('pdf-modal-body');
