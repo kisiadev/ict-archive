@@ -14,11 +14,11 @@
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-    /* 스크롤 페이드 애니메이션을 위한 기본 스타일 */
+    /* 스크롤 페이드 애니메이션 */
     .fade-section {
       opacity: 0;
       transform: translateY(30px);
-      transition: opacity 1.0s ease-out, transform 1.0s ease-out;
+      transition: opacity 0.8s ease-out, transform 0.8s ease-out;
       will-change: opacity, transform;
     }
     .fade-section.visible {
@@ -29,7 +29,7 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between relative">
 
-  <!-- 상단 공식 헤더 (토글 스위치 적용) -->
+  <!-- 상단 공식 헤더 -->
   <div class="bg-white border-b border-slate-200 py-3 px-4 sm:px-6 shadow-sm sticky top-0 z-30">
     <div class="max-w-6xl mx-auto flex items-center justify-between gap-4">
       <div class="flex items-center gap-2 sm:gap-4 md:gap-6">
@@ -54,7 +54,7 @@
     </div>
   </div>
 
-  <!-- Main Content (2단 구조: 왼쪽 본문, 오른쪽 연도별 세로 사이드바) -->
+  <!-- Main Content -->
   <main class="max-w-6xl mx-auto px-4 sm:px-6 py-10 flex-grow w-full">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
       
@@ -75,7 +75,7 @@
     </div>
   </main>
 
-  <!-- 우측 하단 플로팅 퀵 메뉴 (위로가기 / 아래로가기) -->
+  <!-- 우측 하단 플로팅 퀵 메뉴 -->
   <aside class="fixed bottom-6 right-6 z-40 flex flex-col gap-2 shadow-xl rounded-2xl p-1.5 bg-white/90 backdrop-blur-md border border-slate-200">
     <a href="#top-header" title="맨 위로 이동" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition text-xs">
       <i class="fa-solid fa-arrow-up"></i>
@@ -246,10 +246,8 @@
       observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
-            // 아래로 스크롤하여 화면에 들어올 때 (서서히 나타남)
             entry.target.classList.add('visible');
           } else {
-            // 위로 스크롤하여 화면 밖으로 벗어날 때 (서서히 사라짐)
             entry.target.classList.remove('visible');
           }
         });
@@ -283,6 +281,17 @@
         }
       });
 
+      // 타임테이블 데이터를 시간대(time)별로 그룹화
+      const timetableGroups = {};
+      matches.forEach(item => {
+        if (!item.time) return;
+        const timeKey = item.time.trim();
+        if (!timetableGroups[timeKey]) {
+          timetableGroups[timeKey] = [];
+        }
+        timetableGroups[timeKey].push(item);
+      });
+
       container.innerHTML = `
         <!-- 1. 행사명 박스 -->
         <div class="fade-section bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6 text-center transition-all duration-300">
@@ -310,7 +319,7 @@
                 ${overviewText}
               </div>
 
-              <!-- 참가신청 버튼 (applyUrl이 있을 때만 노출) -->
+              <!-- 참가신청 버튼 -->
               ${mainInfo.applyUrl && mainInfo.applyUrl.trim() !== '' && mainInfo.applyUrl !== '#' ? `
                 <div class="mt-6 pt-4 border-t border-slate-100">
                   <a href="${mainInfo.applyUrl}" target="_blank" rel="noopener noreferrer" class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition flex items-center justify-center gap-2">
@@ -327,45 +336,78 @@
           </div>
         </div>
 
-        <!-- 3. 프로그램 안내 (타임테이블) -->
-        <div class="fade-section bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden p-6 sm:p-8 space-y-6">
+        <!-- 3. 프로그램 안내 (이미지 형식 타임테이블 디자인 적용) -->
+        <div class="fade-section bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-6">
           <div class="border-b border-slate-100 pb-4 text-center">
             <h3 class="text-lg sm:text-xl font-bold text-slate-900 flex items-center justify-center gap-2">
               <span class="text-emerald-600"><i class="fa-solid fa-timeline"></i></span> 프로그램 안내
             </h3>
           </div>
 
-          <div class="overflow-x-auto">
-            <table class="w-full text-center text-sm text-slate-600">
-              <thead class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase">
-                <tr>
-                  <th scope="col" class="py-3.5 px-4 text-center">시간</th>
-                  <th scope="col" class="py-3.5 px-4 text-center">세션명</th>
-                  <th scope="col" class="py-3.5 px-4 text-center">연사</th>
-                  <th scope="col" class="py-3.5 px-4 text-center">발표자료</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-100">
-                ${matches.map(item => item.sessionTitle ? `
-                  <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="py-4 px-4 whitespace-nowrap text-xs font-bold text-slate-700 text-center">${item.time || '-'}</td>
-                    <td class="py-4 px-4 font-semibold text-slate-900 text-center whitespace-nowrap">${item.sessionTitle}</td>
-                    <td class="py-4 px-4 text-xs text-slate-600 text-center whitespace-nowrap">${item.speaker || '-'}</td>
-                    <td class="py-4 px-4 text-center whitespace-nowrap">
-                      ${item.pdfUrl && item.pdfUrl.trim() !== '' && item.pdfUrl !== '#' ? `
-                        <button onclick="openPdfModal('${item.pdfUrl}')" title="발표자료 PDF 모달보기" class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition inline-flex items-center justify-center shadow-sm mx-auto">
-                          <i class="fa-solid fa-file-pdf text-sm"></i>
-                        </button>
-                      ` : '<span class="text-xs text-slate-300">-</span>'}
-                    </td>
-                  </tr>
-                ` : '').join('')}
-              </tbody>
-            </table>
+          <div class="space-y-4">
+            ${Object.keys(timetableGroups).length > 0 ? Object.entries(timetableGroups).map(([time, items]) => {
+              // 휴식시간 등 세션명이나 연사가 없는 단순 일정일 경우 처리
+              const isSimpleRow = items.length === 1 && (!items[0].sessionTitle || items[0].sessionTitle.trim() === '');
+              if (isSimpleRow) {
+                return `
+                  <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 sm:px-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <span class="text-xs sm:text-sm font-bold text-slate-700">${time}</span>
+                    <span class="text-xs sm:text-sm font-medium text-slate-500">${items[0].speaker || items[0].overview || '휴식'}</span>
+                  </div>
+                `;
+              }
+
+              // 일반적인 다중 세션 시간대 박스
+              const firstItem = items[0];
+              const sessionTitle = firstItem.sessionTitle || '';
+              const chair = firstItem.chair || ''; // 구글 시트에 chair 필드가 있을 경우 활용, 없으면 비워짐
+
+              return `
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm space-y-4">
+                  <!-- 상단 시간 및 대주제/좌장 영역 -->
+                  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+                    <div class="flex items-center gap-3">
+                      <span class="text-xs sm:text-sm font-black text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-100">${time}</span>
+                      <h4 class="text-sm sm:text-base font-bold text-slate-900">${sessionTitle}</h4>
+                    </div>
+                    ${chair ? `
+                      <div class="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 text-xs font-semibold px-2.5 py-1 rounded-lg shrink-0 self-start lg:self-auto">
+                        <span class="bg-slate-800 text-white text-[10px] px-1.5 py-0.5 rounded font-bold">좌장</span> ${chair}
+                      </div>
+                    ` : ''}
+                  </div>
+
+                  <!-- 하위 세부 발표 목록 (점선 구분) -->
+                  <div class="divide-y divide-dashed divide-slate-200 space-y-3">
+                    ${items.map((sub, sIdx) => {
+                      if (!sub.speaker && !sub.overview) return '';
+                      // sub 데이터 안의 개별 세부 주제가 있을 때 (만약 sessionTitle 외에 별도 발표 주제 필드가 없다면 speaker/overview 활용)
+                      const subTitle = sub.subTitle || sub.overview || sub.speaker; 
+                      return `
+                        <div class="pt-3 first:pt-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <div class="space-y-1">
+                            <p class="text-xs sm:text-sm font-semibold text-slate-800 whitespace-nowrap">${sub.speaker || ''}</p>
+                            ${sub.speakerOrg ? `<span class="text-[11px] text-slate-500 bg-slate-100 px-2 py-0.5 rounded">${sub.speakerOrg}</span>` : ''}
+                          </div>
+                          
+                          <div class="flex items-center justify-between sm:justify-end gap-4 shrink-0">
+                            ${sub.pdfUrl && sub.pdfUrl.trim() !== '' && sub.pdfUrl !== '#' ? `
+                              <button onclick="openPdfModal('${sub.pdfUrl}')" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-emerald-600 bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-200 px-3 py-1.5 rounded-lg transition shadow-sm">
+                                <i class="fa-solid fa-paperclip text-[10px]"></i> 발표자료
+                              </button>
+                            ` : ''}
+                          </div>
+                        </div>
+                      `;
+                    }).join('')}
+                  </div>
+                </div>
+              `;
+            }).join('') : '<div class="text-center py-6 text-xs text-slate-400">등록된 프로그램 정보가 없습니다.</div>'}
           </div>
         </div>
 
-        <!-- 4. 슬라이드 형식으로 FLOW 되는 이미지 갤러리 -->
+        <!-- 4. 현장 스케치 갤러리 -->
         ${galleryImgs.length > 0 ? `
           <div class="fade-section bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 pb-4">
@@ -401,7 +443,7 @@
           </div>
         ` : ''}
 
-        <!-- 5. 유튜브 영상 올리기 영역 -->
+        <!-- 5. 유튜브 영상 영역 -->
         ${embedUrl ? `
           <div class="fade-section bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-4">
             <h3 class="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-4">
@@ -414,7 +456,6 @@
         ` : ''}
       `;
 
-      // 렌더링 완료 후 스크롤 감지 옵저버 적용
       initScrollObserver();
     }
 
