@@ -272,7 +272,7 @@
       }
     }
 
-    // 오른쪽 세로 사이드바 기수별 버튼 렌더링
+    // 오른쪽 세로 사이드바 기수별 버튼 렌더링 (색상 가독성 개선)
     function setupGenFilters() {
       const container = document.getElementById('crew-gen-filters');
       const allGens = [...new Set([
@@ -281,10 +281,10 @@
         ...statsData.map(d => d.gen)
       ].filter(Boolean))].sort().reverse();
 
-      let html = `<button onclick="filterCrew('ALL')" class="crew-filter-btn block w-full text-left py-1.5 px-2 rounded-lg text-sm font-semibold transition-all duration-300 ${currentGenFilter === 'ALL' ? 'text-slate-900 font-bold bg-slate-200/60 translate-x-1 shadow-sm' : 'text-slate-400 hover:text-slate-600 opacity-60 hover:opacity-100'}">전체 보기</button>`;
+      let html = `<button onclick="filterCrew('ALL')" class="crew-filter-btn block w-full text-left py-2 px-3 rounded-lg text-sm font-semibold transition-all duration-300 ${currentGenFilter === 'ALL' ? 'text-slate-900 font-bold bg-slate-200/80 translate-x-1 shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'}">전체 보기</button>`;
       
       allGens.forEach(gen => {
-        html += `<button onclick="filterCrew('${gen}')" class="crew-filter-btn block w-full text-left py-1.5 px-2 rounded-lg text-sm font-semibold transition-all duration-300 ${gen === currentGenFilter ? 'text-slate-900 font-bold bg-slate-200/60 translate-x-1 shadow-sm' : 'text-slate-400 hover:text-slate-600 opacity-60 hover:opacity-100'}">${gen}</button>`;
+        html += `<button onclick="filterCrew('${gen}')" class="crew-filter-btn block w-full text-left py-2 px-3 rounded-lg text-sm font-semibold transition-all duration-300 ${gen === currentGenFilter ? 'text-slate-900 font-bold bg-slate-200/80 translate-x-1 shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'}">${gen}</button>`;
       });
       container.innerHTML = html;
     }
@@ -406,10 +406,17 @@
       }).join('');
     }
 
-    // 2. 프로젝트 카드 렌더링
+    // 2. 프로젝트 카드 렌더링 (우수작 최상단 정렬 및 카드 전체 클릭 시 모달 오픈 적용)
     function renderCrewCards() {
       const grid = document.getElementById('crew-grid');
-      const filtered = currentGenFilter === 'ALL' ? crewData : crewData.filter(item => item.gen === currentGenFilter);
+      let filtered = currentGenFilter === 'ALL' ? [...crewData] : crewData.filter(item => item.gen === currentGenFilter);
+
+      // 우수작(isBest가 TRUE인 항목)이 가장 상단에 오도록 정렬
+      filtered.sort((a, b) => {
+        const aBest = String(a.isBest).toUpperCase() === 'TRUE' ? 1 : 0;
+        const bBest = String(b.isBest).toUpperCase() === 'TRUE' ? 1 : 0;
+        return bBest - aBest; // 내림차순 (우수작이 위로)
+      });
 
       if (filtered.length === 0) {
         grid.innerHTML = `<div class="col-span-full py-10 text-center text-slate-400 text-xs">등록된 연구 과제가 없습니다.</div>`;
@@ -421,22 +428,22 @@
         const originalIndex = crewData.indexOf(item);
 
         return `
-          <div class="bg-white rounded-2xl border border-slate-200 p-5 flex flex-col justify-between hover:shadow-md transition-shadow relative">
+          <div onclick="openProjectModal(${originalIndex})" class="bg-white rounded-2xl border border-slate-200 p-5 flex flex-col justify-between hover:shadow-lg hover:border-blue-300 transition-all cursor-pointer relative group">
             <div>
               <div class="flex items-center justify-between gap-2 mb-3">
                 <span class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">${item.gen || ''} · ${item.category || ''}</span>
                 ${isBest ? '<span class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-amber-50 text-amber-600 border border-amber-200"><i class="fa-solid fa-award mr-1"></i>우수작</span>' : ''}
               </div>
               <span class="text-xs font-semibold text-blue-600 tracking-wide uppercase">[${item.domain || '일반'}]</span>
-              <h3 class="text-base font-bold text-slate-900 mt-1 leading-snug">${item.title || ''}</h3>
+              <h3 class="text-base font-bold text-slate-900 mt-1 leading-snug group-hover:text-blue-600 transition-colors">${item.title || ''}</h3>
               <p class="text-xs text-slate-500 mt-2 line-clamp-2 leading-relaxed">${item.description || ''}</p>
               ${item.team ? `<p class="text-[11px] text-slate-400 mt-2.5"><i class="fa-solid fa-users text-[10px] mr-1"></i>${item.team}</p>` : ''}
             </div>
             <div class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs">
               <span class="text-slate-400"><i class="fa-regular fa-calendar mr-1"></i>${item.date || ''}</span>
-              <button onclick="openProjectModal(${originalIndex})" class="font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1.5 transition">
+              <span class="font-semibold text-blue-600 group-hover:text-blue-800 flex items-center gap-1.5 transition">
                 <span>자세히 보기</span> <i class="fa-solid fa-circle-info text-[11px]"></i>
-              </button>
+              </span>
             </div>
           </div>
         `;
@@ -547,7 +554,7 @@
           <button onclick="closeModal('detail-modal')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition">닫기</button>
           
           ${hasValidLink ? `
-            <a href="${finalLink}" target="_blank" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 shadow-sm transition">
+            <a href="${finalLink}" target="_blank" onclick="event.stopPropagation()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 shadow-sm transition">
               <span>${customLinkLabel}</span> <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
             </a>
           ` : ''}
