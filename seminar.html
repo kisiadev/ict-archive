@@ -42,18 +42,6 @@
     </div>
   </div>
 
-  <!-- Hero Section -->
-  <header id="top-header" class="bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-950 text-white py-10 sm:py-12 px-4 sm:px-6 shadow-md">
-    <div class="max-w-6xl mx-auto">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] sm:text-xs font-semibold mb-3 border border-emerald-400/30">
-        <i class="fa-solid fa-file-shield"></i> ICT Convergence Security Event Archive
-      </div>
-      <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight break-keep">
-        ICT Convergence Security Event Archive
-      </h1>
-    </div>
-  </header>
-
   <!-- Main Content (2단 구조: 왼쪽 본문, 오른쪽 연도별 세로 사이드바) -->
   <main class="max-w-6xl mx-auto px-4 sm:px-6 py-10 flex-grow w-full">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -254,7 +242,7 @@
       container.innerHTML = `
         <!-- 1. 행사명 박스 -->
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6 text-center transition-all duration-300">
-          <span class="text-xs font-bold text-emerald-600 uppercase tracking-widest block mb-1">${round}</span>
+          <h4 class="text-xs font-bold text-emerald-600 uppercase tracking-widest block mb-1">${round}</h4>
           <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">${eventTitle}</h2>
         </div>
 
