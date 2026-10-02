@@ -21,7 +21,6 @@
       color: #fbbf24;
       text-shadow: 0 2px 10px rgba(251, 191, 36, 0.3);
     }
-    /* 슬라이더 스크롤바 숨기기 */
     .no-scrollbar::-webkit-scrollbar {
       display: none;
     }
@@ -33,11 +32,9 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between relative">
 
-  <!-- GNB 헤더 (토글 스위치 적용) -->
+  <!-- GNB 헤더 -->
   <div class="bg-white border-b border-slate-200 py-3 px-4 sm:px-6 shadow-sm sticky top-0 z-30">
     <div class="max-w-6xl mx-auto flex items-center justify-between gap-4">
-      
-      <!-- 로고 영역 -->
       <div class="flex items-center gap-2 sm:gap-4 md:gap-6">
         <a href="https://www.kisia.or.kr/ks/kisia_index.php" target="_blank" rel="noopener noreferrer" class="shrink-0 transition-transform hover:scale-105" title="한국정보보호산업협회 바로가기">
           <img src="logo-kisia.png" alt="한국정보보호산업협회" class="h-5 sm:h-6 md:h-8 object-contain" />
@@ -48,7 +45,6 @@
         </a>
       </div>
 
-      <!-- 토글 스위치 버튼 -->
       <div class="bg-slate-100 p-1 rounded-full flex items-center shadow-inner border border-slate-200 shrink-0">
         <a href="./" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white text-blue-700 shadow-sm transition">
           크루 아카이브
@@ -57,7 +53,6 @@
           이벤트 아카이브
         </a>
       </div>
-
     </div>
   </div>
 
@@ -67,7 +62,6 @@
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-[10px] sm:text-xs font-semibold mb-3 border border-blue-400/30">
         <i class="fa-solid fa-user-shield"></i> ICT Convergence Security Crew
       </div>
-      
       <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight break-keep">
         ICT융합보안크루 아카이브
       </h1>
@@ -77,7 +71,7 @@
     </div>
   </header>
 
-  <!-- Main Content Area (2단 구조: 왼쪽 본문, 오른쪽 세로형 기수 선택 사이드바) -->
+  <!-- Main Content Area -->
   <main class="max-w-6xl mx-auto px-4 sm:px-6 py-10 flex-grow w-full">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
       
@@ -111,7 +105,7 @@
           </div>
         </section>
 
-        <!-- Section 1: 크루 활동 타임라인 (Journey) -->
+        <!-- Section 1: 크루 활동 타임라인 -->
         <section id="timeline-section" class="space-y-6 pt-4">
           <div class="border-b border-slate-200 pb-4">
             <h2 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
@@ -119,7 +113,6 @@
             </h2>
             <p class="text-sm text-slate-500 mt-1">모집 공고부터 최종 수료까지의 현장 사진과 주요 일정을 타임라인으로 탐색합니다.</p>
           </div>
-
           <div id="timeline-container" class="relative pl-6 md:pl-8 border-l-2 border-indigo-100 space-y-8 my-4">
             <div class="py-10 text-center text-slate-400 text-sm">
               <i class="fa-solid fa-spinner fa-spin mr-2"></i> 타임라인 데이터를 불러오는 중입니다...
@@ -127,7 +120,7 @@
           </div>
         </section>
 
-        <!-- Section 2: ICT융합보안크루 연구 활동 성과관 (Projects) -->
+        <!-- Section 2: 연구 활동 성과관 -->
         <section id="project-section" class="space-y-6 pt-4">
           <div class="border-b border-slate-200 pb-4">
             <h2 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
@@ -152,7 +145,7 @@
               </div>
             </div>
             <div id="best-slider-container" class="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth py-1">
-              <!-- 동적 생성되는 우수작 슬라이드 카드 -->
+              <!-- 우수작 슬라이드 카드 -->
             </div>
           </div>
 
@@ -168,14 +161,14 @@
       <!-- 오른쪽: 세로형 기수 선택 사이드 네비게이션 -->
       <aside class="lg:col-span-3 lg:sticky lg:top-24 space-y-3">
         <div class="border-l-2 border-slate-300 pl-4 space-y-2" id="crew-gen-filters">
-          <!-- 동적 생성되는 기수 목록 -->
+          <!-- 기수 목록 -->
         </div>
       </aside>
 
     </div>
   </main>
 
-  <!-- 우측 하단 플로팅 퀵 메뉴 -->
+  <!-- 플로팅 퀵 메뉴 -->
   <aside class="fixed bottom-6 right-6 z-40 flex flex-col gap-2 shadow-xl rounded-2xl p-1.5 bg-white/90 backdrop-blur-md border border-slate-200">
     <a href="#top-header" title="맨 위로 이동" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition text-xs">
       <i class="fa-solid fa-arrow-up"></i>
@@ -191,7 +184,7 @@
     </a>
   </aside>
 
-  <!-- 모달 1: 프로젝트 상세 보기 모달 -->
+  <!-- 모달들 -->
   <div id="detail-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-xl w-full p-6 sm:p-8 shadow-2xl relative animate-in fade-in zoom-in duration-200">
       <button onclick="closeModal('detail-modal')" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 text-lg w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 transition">
@@ -201,7 +194,6 @@
     </div>
   </div>
 
-  <!-- 모달 2: 타임라인 활동 갤러리 모달 -->
   <div id="gallery-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden shadow-2xl flex flex-col relative animate-in fade-in zoom-in duration-200">
       <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
@@ -217,7 +209,6 @@
     </div>
   </div>
 
-  <!-- 모달 3: 원본 사진 단독 확대 뷰어 (Lightbox) -->
   <div id="lightbox-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4" onclick="closeModal('lightbox-modal')">
     <button onclick="closeModal('lightbox-modal')" class="absolute top-5 right-5 text-white/70 hover:text-white text-2xl w-10 h-10 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 transition">
       <i class="fa-solid fa-xmark"></i>
@@ -244,9 +235,7 @@
     </div>
   </footer>
 
-  <!-- ========================================== -->
-  <!-- ⚙️ 스크립트 로직 -->
-  <!-- ========================================== -->
+  <!-- Script -->
   <script>
     const CREW_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSX8ZG1BwtKpvS72k4ut88Nf2gdn9PP78EFKjedj9_s56NuOeYLpsxcmG8L4pTPWjGIuNy0xpTCnsBt/pub?gid=0&single=true&output=csv";
     const ACTIVITY_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSX8ZG1BwtKpvS72k4ut88Nf2gdn9PP78EFKjedj9_s56NuOeYLpsxcmG8L4pTPWjGIuNy0xpTCnsBt/pub?gid=1121022433&single=true&output=csv";
@@ -308,7 +297,7 @@
         ...statsData.map(d => d.gen)
       ].filter(Boolean))].sort().reverse();
 
-      let html = `<button onclick="filterCrew('ALL')" class="crew-filter-btn block w-full text-left py-2 px-3 rounded-lg text-sm font-semibold transition-all duration-300 ${currentGenFilter === 'ALL' ? 'text-slate-900 font-bold bg-slate-200/80 translate-x-1 shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'}">전체 보기</button>`;
+      let html = `<button onclick="filterCrew('ALL')" class="crew-filter-btn block w-full text-left py-2 px-3 rounded-lg text-sm font-semibold transition-all duration-300 ${currentGenFilter === 'ALL' ? 'text-slate-900 font-bold bg-slate-200/80 translate-x-1 shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'}">전체 보기 (종합)</button>`;
       
       allGens.forEach(gen => {
         html += `<button onclick="filterCrew('${gen}')" class="crew-filter-btn block w-full text-left py-2 px-3 rounded-lg text-sm font-semibold transition-all duration-300 ${gen === currentGenFilter ? 'text-slate-900 font-bold bg-slate-200/80 translate-x-1 shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'}">${gen}</button>`;
@@ -329,37 +318,55 @@
       const titleEl = document.getElementById('stats-title');
       const sloganEl = document.getElementById('stats-slogan');
 
-      let targetGen = currentGenFilter;
-      if (targetGen === 'ALL') {
-        const availableGens = [...new Set(statsData.map(d => d.gen).filter(Boolean))].sort().reverse();
-        targetGen = availableGens[0] || '1기';
-      }
+      if (currentGenFilter === 'ALL') {
+        titleEl.innerHTML = `ICT융합보안크루 <span class="text-amber-300 font-black">전체 누적</span> 성과`;
+        sloganEl.innerText = "내일의 융합보안을 이끌어온 대학생 보안 크루의 총합";
 
-      titleEl.innerHTML = `ICT융합보안크루 <span class="text-amber-300 font-black">${targetGen}</span> 성과`;
+        const summaryStats = [
+          { label: "총 연구 수행 크루", value: "11개 크루", icon: "fa-solid fa-laptop-code" },
+          { label: "총 공모전 및 학술 수상", value: "3회 이상", icon: "fa-solid fa-trophy" },
+          { label: "총 학술대회 발표 및 게재", value: "19건+", icon: "fa-solid fa-chalkboard-user" },
+          { label: "오픈소스 및 지식재산권", value: "총 7건", icon: "fa-solid fa-hourglass-half" }
+        ];
 
-      const filtered = statsData.filter(item => item.gen === targetGen);
-      const currentSlogan = filtered.find(item => item.slogan && item.slogan.trim() !== '')?.slogan 
-                            || "내일의 융합보안을 이끌 대학생 보안 크루";
-      sloganEl.innerText = currentSlogan;
-
-      if (filtered.length === 0) {
-        grid.innerHTML = `<div class="col-span-full py-8 text-center text-indigo-200 text-xs">해당 기수의 집계 데이터가 없습니다.</div>`;
-        return;
-      }
-
-      grid.innerHTML = filtered.map(item => `
-        <div class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/15 hover:bg-white/15 transition flex flex-col justify-between text-center relative group">
-          <div>
-            <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-indigo-500/30 flex items-center justify-center text-amber-300 text-xl border border-indigo-400/30">
-              <i class="${item.icon || 'fa-solid fa-award'}"></i>
+        grid.innerHTML = summaryStats.map(item => `
+          <div class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/15 hover:bg-white/15 transition flex flex-col justify-between text-center relative group">
+            <div>
+              <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-indigo-500/30 flex items-center justify-center text-amber-300 text-xl border border-indigo-400/30">
+                <i class="${item.icon}"></i>
+              </div>
+              <p class="text-xs sm:text-sm font-medium text-slate-200 leading-snug">${item.label}</p>
             </div>
-            <p class="text-xs sm:text-sm font-medium text-slate-200 leading-snug">${item.label || ''}</p>
+            <div class="mt-4 pt-3 border-t border-white/10">
+              <span class="text-2xl sm:text-3xl font-black text-amber-300 tracking-tight text-gold">${item.value}</span>
+            </div>
           </div>
-          <div class="mt-4 pt-3 border-t border-white/10">
-            <span class="text-2xl sm:text-3xl font-black text-amber-300 tracking-tight text-gold">${item.value || ''}</span>
+        `).join('');
+      } else {
+        titleEl.innerHTML = `ICT융합보안크루 <span class="text-amber-300 font-black">${currentGenFilter}</span> 성과`;
+        const filtered = statsData.filter(item => item.gen === currentGenFilter);
+        const currentSlogan = filtered.find(item => item.slogan && item.slogan.trim() !== '')?.slogan || "내일의 융합보안을 이끌 대학생 보안 크루";
+        sloganEl.innerText = currentSlogan;
+
+        if (filtered.length === 0) {
+          grid.innerHTML = `<div class="col-span-full py-8 text-center text-indigo-200 text-xs">해당 기수의 집계 데이터가 없습니다.</div>`;
+          return;
+        }
+
+        grid.innerHTML = filtered.map(item => `
+          <div class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/15 hover:bg-white/15 transition flex flex-col justify-between text-center relative group">
+            <div>
+              <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-indigo-500/30 flex items-center justify-center text-amber-300 text-xl border border-indigo-400/30">
+                <i class="${item.icon || 'fa-solid fa-award'}"></i>
+              </div>
+              <p class="text-xs sm:text-sm font-medium text-slate-200 leading-snug">${item.label || ''}</p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/10">
+              <span class="text-2xl sm:text-3xl font-black text-amber-300 tracking-tight text-gold">${item.value || ''}</span>
+            </div>
           </div>
-        </div>
-      `).join('');
+        `).join('');
+      }
     }
 
     function renderTimeline() {
@@ -385,7 +392,6 @@
         return `
           <div class="relative group">
             <div class="absolute -left-[31px] md:-left-[39px] top-1.5 w-4 h-4 rounded-full bg-white border-4 border-indigo-600 group-hover:scale-125 transition-transform shadow-sm"></div>
-
             <div class="bg-white rounded-2xl border border-slate-200 p-5 hover:shadow-md transition-shadow">
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
                 <div class="flex items-center gap-2">
@@ -394,12 +400,10 @@
                 </div>
                 <span class="text-xs font-medium text-slate-400"><i class="fa-regular fa-calendar mr-1"></i>${item.date || ''}</span>
               </div>
-
               <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
                 <div class="${firstImg ? 'md:col-span-8' : 'md:col-span-12'}">
                   <h3 class="text-base sm:text-lg font-bold text-slate-900">${item.title || ''}</h3>
                   <p class="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">${item.summary || ''}</p>
-                  
                   ${hasDetailedGallery ? `
                     <div class="mt-4 flex items-center gap-3">
                       <button onclick="openGalleryModal(${originalIndex})" class="px-3.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-lg border border-indigo-200 flex items-center gap-1.5 transition">
@@ -408,7 +412,6 @@
                     </div>
                   ` : ''}
                 </div>
-
                 ${firstImg ? `
                   <div class="md:col-span-4 cursor-pointer overflow-hidden rounded-xl border border-slate-200 bg-slate-100/70 p-1 flex items-center justify-center group/img relative" 
                        onclick="${hasDetailedGallery ? `openGalleryModal(${originalIndex})` : `openLightbox('${firstImg}', '${encodeURIComponent(item.title || '')}')`}">
@@ -429,25 +432,21 @@
       }).join('');
     }
 
-    // 프로젝트 카드 및 우수작 슬라이더 렌더링
     function renderCrewCards() {
       const grid = document.getElementById('crew-grid');
       const sliderWrapper = document.getElementById('best-slider-wrapper');
       const sliderContainer = document.getElementById('best-slider-container');
 
-      // 1. 선택된 기수에 맞는 데이터 필터링 및 우수작 상단 정렬
       let filtered = currentGenFilter === 'ALL' ? [...crewData] : crewData.filter(item => item.gen === currentGenFilter);
 
       filtered.sort((a, b) => {
         const aBest = String(a.isBest).toUpperCase() === 'TRUE' ? 1 : 0;
         const bBest = String(b.isBest).toUpperCase() === 'TRUE' ? 1 : 0;
-        return bBest - aBest; // 우수작이 최상단
+        return bBest - aBest;
       });
 
-      // 2. 우수작 슬라이더 데이터 준비 (전체 보기일 때는 모든 기수의 우수작, 특정 기수 선택 시 해당 기수의 우수작)
-      const bestItems = currentGenFilter === 'ALL' 
-        ? crewData.filter(item => String(item.isBest).toUpperCase() === 'TRUE')
-        : filtered.filter(item => String(item.isBest).toUpperCase() === 'TRUE');
+      // 항상 모든 기수의 우수작이 슬라이드에 노출되도록 설정
+      const bestItems = crewData.filter(item => String(item.isBest).toUpperCase() === 'TRUE');
 
       if (bestItems.length > 0) {
         sliderWrapper.classList.remove('hidden');
@@ -474,7 +473,6 @@
         sliderWrapper.classList.add('hidden');
       }
 
-      // 3. 메인 프로젝트 그리드 렌더링
       if (filtered.length === 0) {
         grid.innerHTML = `<div class="col-span-full py-10 text-center text-slate-400 text-xs">등록된 연구 과제가 없습니다.</div>`;
         return;
@@ -507,10 +505,9 @@
       }).join('');
     }
 
-    // 우수작 슬라이더 좌우 이동 함수 (<, > 버튼 제어)
     function slideBestCards(direction) {
       const container = document.getElementById('best-slider-container');
-      const scrollAmount = 320; // 카드 한 개 너비 기준 이동
+      const scrollAmount = 320;
       container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
     }
 
@@ -548,7 +545,6 @@
           `).join('')}
         </div>
       `;
-
       openModal('gallery-modal');
     }
 
@@ -580,14 +576,11 @@
           } else {
             finalLink = rawLink.startsWith('http') ? rawLink : 'https://' + rawLink;
           }
-        } 
-        else if (rawLink.startsWith('http') || rawLink.startsWith('/')) {
+        } else if (rawLink.startsWith('http') || rawLink.startsWith('/')) {
           finalLink = rawLink;
-        } 
-        else if (rawLink.includes('.com') || rawLink.includes('.kr') || rawLink.includes('.net') || rawLink.includes('.so')) {
+        } else if (rawLink.includes('.com') || rawLink.includes('.kr') || rawLink.includes('.net') || rawLink.includes('.so')) {
           finalLink = 'https://' + rawLink;
-        } 
-        else {
+        } else {
           finalLink = rawLink;
         }
       }
@@ -616,7 +609,6 @@
 
         <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-end gap-2.5">
           <button onclick="closeModal('detail-modal')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition">닫기</button>
-          
           ${hasValidLink ? `
             <a href="${finalLink}" target="_blank" onclick="event.stopPropagation()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 shadow-sm transition">
               <span>${customLinkLabel}</span> <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
@@ -624,7 +616,6 @@
           ` : ''}
         </div>
       `;
-
       openModal('detail-modal');
     }
 
