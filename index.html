@@ -21,6 +21,14 @@
       color: #fbbf24;
       text-shadow: 0 2px 10px rgba(251, 191, 36, 0.3);
     }
+    /* 슬라이더 스크롤바 숨기기 */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between relative">
@@ -128,6 +136,26 @@
             <p class="text-sm text-slate-500 mt-1">팀별 심층 프로젝트 결과물, 요약문 및 최종 산출물 아카이브</p>
           </div>
 
+          <!-- 우수작 슬라이드 배너 영역 -->
+          <div id="best-slider-wrapper" class="hidden space-y-3 bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-transparent p-5 rounded-2xl border border-amber-200/60">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-bold text-amber-800 flex items-center gap-1.5">
+                <i class="fa-solid fa-award text-amber-600"></i> 기수별 우수작 하이라이트
+              </h3>
+              <div class="flex items-center gap-1.5">
+                <button onclick="slideBestCards(-1)" class="w-7 h-7 rounded-lg bg-white border border-amber-200 hover:bg-amber-100 text-amber-700 flex items-center justify-center transition text-xs shadow-sm" title="이전">
+                  <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <button onclick="slideBestCards(1)" class="w-7 h-7 rounded-lg bg-white border border-amber-200 hover:bg-amber-100 text-amber-700 flex items-center justify-center transition text-xs shadow-sm" title="다음">
+                  <i class="fa-solid fa-chevron-right"></i>
+                </button>
+              </div>
+            </div>
+            <div id="best-slider-container" class="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth py-1">
+              <!-- 동적 생성되는 우수작 슬라이드 카드 -->
+            </div>
+          </div>
+
           <div id="crew-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div class="col-span-full py-10 text-center text-slate-400 text-sm">
               <i class="fa-solid fa-spinner fa-spin mr-2"></i> 프로젝트 데이터를 불러오는 중입니다...
@@ -147,7 +175,7 @@
     </div>
   </main>
 
-  <!-- 우측 하단 플로팅 퀵 메뉴 (기존 원본 형태 유지) -->
+  <!-- 우측 하단 플로팅 퀵 메뉴 -->
   <aside class="fixed bottom-6 right-6 z-40 flex flex-col gap-2 shadow-xl rounded-2xl p-1.5 bg-white/90 backdrop-blur-md border border-slate-200">
     <a href="#top-header" title="맨 위로 이동" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition text-xs">
       <i class="fa-solid fa-arrow-up"></i>
@@ -272,7 +300,6 @@
       }
     }
 
-    // 오른쪽 세로 사이드바 기수별 버튼 렌더링 (색상 가독성 개선)
     function setupGenFilters() {
       const container = document.getElementById('crew-gen-filters');
       const allGens = [...new Set([
@@ -297,7 +324,6 @@
       renderCrewCards();
     }
 
-    // 0. 숫자로 보는 성과 렌더링 (전체 보기 시 가장 최근 기수 결과물 노출)
     function renderStats() {
       const grid = document.getElementById('stats-grid');
       const titleEl = document.getElementById('stats-title');
@@ -312,7 +338,6 @@
       titleEl.innerHTML = `ICT융합보안크루 <span class="text-amber-300 font-black">${targetGen}</span> 성과`;
 
       const filtered = statsData.filter(item => item.gen === targetGen);
-
       const currentSlogan = filtered.find(item => item.slogan && item.slogan.trim() !== '')?.slogan 
                             || "내일의 융합보안을 이끌 대학생 보안 크루";
       sloganEl.innerText = currentSlogan;
@@ -337,7 +362,6 @@
       `).join('');
     }
 
-    // 1. 타임라인 렌더링
     function renderTimeline() {
       const container = document.getElementById('timeline-container');
       const filtered = currentGenFilter === 'ALL' ? activityData : activityData.filter(item => item.gen === currentGenFilter);
@@ -352,7 +376,6 @@
         const images = (item.images || '').split(/[\n,]+/).map(s => formatDriveImageUrl(s)).filter(Boolean);
         const captions = (item.captions || '').split(/\n+/).map(s => s.trim()).filter(Boolean);
         const firstImg = images[0] || '';
-
         const hasDetailedGallery = images.length > 1 || captions.length > 0;
 
         let badgeColor = "bg-indigo-50 text-indigo-700 border-indigo-200";
@@ -406,18 +429,52 @@
       }).join('');
     }
 
-    // 2. 프로젝트 카드 렌더링 (우수작 최상단 정렬 및 카드 전체 클릭 시 모달 오픈 적용)
+    // 프로젝트 카드 및 우수작 슬라이더 렌더링
     function renderCrewCards() {
       const grid = document.getElementById('crew-grid');
+      const sliderWrapper = document.getElementById('best-slider-wrapper');
+      const sliderContainer = document.getElementById('best-slider-container');
+
+      // 1. 선택된 기수에 맞는 데이터 필터링 및 우수작 상단 정렬
       let filtered = currentGenFilter === 'ALL' ? [...crewData] : crewData.filter(item => item.gen === currentGenFilter);
 
-      // 우수작(isBest가 TRUE인 항목)이 가장 상단에 오도록 정렬
       filtered.sort((a, b) => {
         const aBest = String(a.isBest).toUpperCase() === 'TRUE' ? 1 : 0;
         const bBest = String(b.isBest).toUpperCase() === 'TRUE' ? 1 : 0;
-        return bBest - aBest; // 내림차순 (우수작이 위로)
+        return bBest - aBest; // 우수작이 최상단
       });
 
+      // 2. 우수작 슬라이더 데이터 준비 (전체 보기일 때는 모든 기수의 우수작, 특정 기수 선택 시 해당 기수의 우수작)
+      const bestItems = currentGenFilter === 'ALL' 
+        ? crewData.filter(item => String(item.isBest).toUpperCase() === 'TRUE')
+        : filtered.filter(item => String(item.isBest).toUpperCase() === 'TRUE');
+
+      if (bestItems.length > 0) {
+        sliderWrapper.classList.remove('hidden');
+        sliderContainer.innerHTML = bestItems.map(item => {
+          const originalIndex = crewData.indexOf(item);
+          return `
+            <div onclick="openProjectModal(${originalIndex})" class="min-w-[280px] sm:min-w-[320px] max-w-[350px] bg-white rounded-xl border border-amber-200/80 p-4 flex-shrink-0 shadow-sm hover:shadow-md hover:border-amber-400 transition cursor-pointer flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between gap-2 mb-2">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">${item.gen || ''} · ${item.category || ''}</span>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200"><i class="fa-solid fa-award mr-1"></i>우수작</span>
+                </div>
+                <h4 class="text-sm font-bold text-slate-900 line-clamp-1">${item.title || ''}</h4>
+                <p class="text-xs text-slate-500 mt-1 line-clamp-2">${item.description || ''}</p>
+              </div>
+              <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-blue-600 font-semibold">
+                <span>자세히 보기</span>
+                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } else {
+        sliderWrapper.classList.add('hidden');
+      }
+
+      // 3. 메인 프로젝트 그리드 렌더링
       if (filtered.length === 0) {
         grid.innerHTML = `<div class="col-span-full py-10 text-center text-slate-400 text-xs">등록된 연구 과제가 없습니다.</div>`;
         return;
@@ -448,6 +505,13 @@
           </div>
         `;
       }).join('');
+    }
+
+    // 우수작 슬라이더 좌우 이동 함수 (<, > 버튼 제어)
+    function slideBestCards(direction) {
+      const container = document.getElementById('best-slider-container');
+      const scrollAmount = 320; // 카드 한 개 너비 기준 이동
+      container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
     }
 
     function openGalleryModal(index) {
