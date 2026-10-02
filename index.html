@@ -297,7 +297,7 @@
         ...statsData.map(d => d.gen)
       ].filter(Boolean))].sort().reverse();
 
-      let html = `<button onclick="filterCrew('ALL')" class="crew-filter-btn block w-full text-left py-2 px-3 rounded-lg text-sm font-semibold transition-all duration-300 ${currentGenFilter === 'ALL' ? 'text-slate-900 font-bold bg-slate-200/80 translate-x-1 shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'}">전체 보기 (종합)</button>`;
+      let html = `<button onclick="filterCrew('ALL')" class="crew-filter-btn block w-full text-left py-2 px-3 rounded-lg text-sm font-semibold transition-all duration-300 ${currentGenFilter === 'ALL' ? 'text-slate-900 font-bold bg-slate-200/80 translate-x-1 shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'}">전체</button>`;
       
       allGens.forEach(gen => {
         html += `<button onclick="filterCrew('${gen}')" class="crew-filter-btn block w-full text-left py-2 px-3 rounded-lg text-sm font-semibold transition-all duration-300 ${gen === currentGenFilter ? 'text-slate-900 font-bold bg-slate-200/80 translate-x-1 shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'}">${gen}</button>`;
