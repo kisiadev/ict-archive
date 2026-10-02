@@ -336,7 +336,7 @@
           </div>
         </div>
 
-        <!-- 3. 프로그램 안내 (이미지 형식 타임테이블 디자인 적용) -->
+        <!-- 3. 프로그램 안내 (타임테이블) -->
         <div class="fade-section bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-6">
           <div class="border-b border-slate-100 pb-4 text-center">
             <h3 class="text-lg sm:text-xl font-bold text-slate-900 flex items-center justify-center gap-2">
@@ -346,21 +346,26 @@
 
           <div class="space-y-4">
             ${Object.keys(timetableGroups).length > 0 ? Object.entries(timetableGroups).map(([time, items]) => {
-              // 휴식시간 등 세션명이나 연사가 없는 단순 일정일 경우 처리
-              const isSimpleRow = items.length === 1 && (!items[0].sessionTitle || items[0].sessionTitle.trim() === '');
-              if (isSimpleRow) {
+              // '휴식' 관련 항목 또는 단독 단순 일정 체크
+              const isBreak = items.some(i => 
+                (i.sessionTitle && i.sessionTitle.includes('휴식')) || 
+                (i.overview && i.overview.includes('휴식')) || 
+                (i.speaker && i.speaker.includes('휴식'))
+              ) || (items.length === 1 && (!items[0].sessionTitle || items[0].sessionTitle.trim() === ''));
+
+              if (isBreak) {
+                const breakText = items[0].sessionTitle || items[0].overview || items[0].speaker || '휴식 시간';
                 return `
-                  <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 sm:px-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div class="bg-slate-100 border border-slate-200 rounded-2xl p-4 sm:px-6 flex items-center justify-between">
                     <span class="text-xs sm:text-sm font-bold text-slate-700">${time}</span>
-                    <span class="text-xs sm:text-sm font-medium text-slate-500">${items[0].speaker || items[0].overview || '휴식'}</span>
+                    <span class="text-xs sm:text-sm font-medium text-slate-600">${breakText}</span>
                   </div>
                 `;
               }
 
-              // 일반적인 다중 세션 시간대 박스
               const firstItem = items[0];
               const sessionTitle = firstItem.sessionTitle || '';
-              const chair = firstItem.chair || ''; // 구글 시트에 chair 필드가 있을 경우 활용, 없으면 비워짐
+              const chair = firstItem.chair || '';
 
               return `
                 <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm space-y-4">
@@ -377,20 +382,32 @@
                     ` : ''}
                   </div>
 
-                  <!-- 하위 세부 발표 목록 (점선 구분) -->
+                  <!-- 하위 세부 발표 목록 -->
                   <div class="divide-y divide-dashed divide-slate-200 space-y-3">
-                    ${items.map((sub, sIdx) => {
-                      if (!sub.speaker && !sub.overview) return '';
-                      // sub 데이터 안의 개별 세부 주제가 있을 때 (만약 sessionTitle 외에 별도 발표 주제 필드가 없다면 speaker/overview 활용)
-                      const subTitle = sub.subTitle || sub.overview || sub.speaker; 
+                    ${items.map((sub) => {
+                      if (!sub.speaker && !sub.overview && !sub.sessionTitle) return '';
+                      
+                      let rawSpeaker = sub.speaker || sub.overview || '';
+                      let affiliation = sub.affiliation || sub.speakerOrg || '';
+
+                      // 만약 speaker 필드 안에 이름과 소속이 같이 적혀있을 경우 분리 처리
+                      if (!affiliation && rawSpeaker.includes(' ')) {
+                        const parts = rawSpeaker.split(' ');
+                        rawSpeaker = parts[0];
+                        affiliation = parts.slice(1).join(' ');
+                      }
+
                       return `
                         <div class="pt-3 first:pt-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                          <div class="space-y-1">
-                            <p class="text-xs sm:text-sm font-semibold text-slate-800 whitespace-nowrap">${sub.speaker || ''}</p>
-                            ${sub.speakerOrg ? `<span class="text-[11px] text-slate-500 bg-slate-100 px-2 py-0.5 rounded">${sub.speakerOrg}</span>` : ''}
+                          <div class="flex items-center gap-2">
+                            <span class="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded border border-emerald-100 shrink-0">발표</span>
+                            <div class="flex items-baseline gap-2 flex-wrap">
+                              <span class="text-xs sm:text-sm font-bold text-slate-900">(연사) ${rawSpeaker}</span>
+                              ${affiliation ? `<span class="text-xs text-slate-400 font-normal">${affiliation}</span>` : ''}
+                            </div>
                           </div>
                           
-                          <div class="flex items-center justify-between sm:justify-end gap-4 shrink-0">
+                          <div class="flex items-center justify-end shrink-0">
                             ${sub.pdfUrl && sub.pdfUrl.trim() !== '' && sub.pdfUrl !== '#' ? `
                               <button onclick="openPdfModal('${sub.pdfUrl}')" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-emerald-600 bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-200 px-3 py-1.5 rounded-lg transition shadow-sm">
                                 <i class="fa-solid fa-paperclip text-[10px]"></i> 발표자료
