@@ -281,7 +281,6 @@
         }
       });
 
-      // 타임테이블 데이터를 시간대(time)별로 그룹화
       const timetableGroups = {};
       matches.forEach(item => {
         if (!item.time) return;
@@ -291,6 +290,165 @@
         }
         timetableGroups[timeKey].push(item);
       });
+
+      let timetableHtml = '';
+      const timeKeys = Object.keys(timetableGroups);
+
+      if (timeKeys.length > 0) {
+        timeKeys.forEach(time => {
+          const items = timetableGroups[time];
+          const isSpecialRow = items.some(i => {
+            const combinedText = `${i.sessionTitle || ''} ${i.overview || ''} ${i.speaker || ''}`;
+            return combinedText.includes('휴식') || combinedText.includes('경품') || combinedText.includes('폐회');
+          }) || (items.length === 1 && (!items[0].sessionTitle || items[0].sessionTitle.trim() === ''));
+
+          if (isSpecialRow) {
+            const specialText = items[0].sessionTitle || items[0].overview || items[0].speaker || '안내 사항';
+            timetableHtml += `
+              <div class="bg-slate-100 border border-slate-200 rounded-2xl p-4 sm:px-6 flex items-center justify-between">
+                <span class="text-xs sm:text-sm font-bold text-slate-700">${time}</span>
+                <span class="text-xs sm:text-sm font-medium text-slate-600">${specialText}</span>
+              </div>
+            `;
+          } else {
+            const firstItem = items[0];
+            const sessionTitle = firstItem.sessionTitle || '';
+            const chair = firstItem.chair || '';
+
+            let subItemsHtml = '';
+            items.forEach(sub => {
+              if (sub.speaker || sub.overview || sub.sessionTitle) {
+                let rawSpeaker = sub.speaker || sub.overview || '';
+                let affiliation = sub.affiliation || sub.speakerOrg || '';
+
+                if (!affiliation && rawSpeaker.includes(' ')) {
+                  const parts = rawSpeaker.split(' ');
+                  rawSpeaker = parts[0];
+                  affiliation = parts.slice(1).join(' ');
+                }
+
+                let pdfBtnHtml = '';
+                if (sub.pdfUrl && sub.pdfUrl.trim() !== '' && sub.pdfUrl !== '#') {
+                  pdfBtnHtml = `
+                    <button onclick="openPdfModal('${sub.pdfUrl}')" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-emerald-600 bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-200 px-3 py-1.5 rounded-lg transition shadow-sm">
+                      <i class="fa-solid fa-paperclip text-[10px]"></i> 발표자료
+                    </button>
+                  `;
+                }
+
+                subItemsHtml += `
+                  <div class="pt-3 first:pt-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-2">
+                      <span class="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded border border-emerald-100 shrink-0">발표</span>
+                      <div class="flex items-baseline gap-2 flex-wrap">
+                        <span class="text-xs sm:text-sm font-bold text-slate-900">(연사) ${rawSpeaker}</span>
+                        ${affiliation ? `<span class="text-xs text-slate-400 font-normal">${affiliation}</span>` : ''}
+                      </div>
+                    </div>
+                    <div class="flex items-center justify-end shrink-0">
+                      ${pdfBtnHtml}
+                    </div>
+                  </div>
+                `;
+              }
+            });
+
+            let chairHtml = '';
+            if (chair) {
+              chairHtml = `
+                <div class="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 text-xs font-semibold px-2.5 py-1 rounded-lg shrink-0 self-start lg:self-auto">
+                  <span class="bg-slate-800 text-white text-[10px] px-1.5 py-0.5 rounded font-bold">좌장</span> ${chair}
+                </div>
+              `;
+            }
+
+            timetableHtml += `
+              <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm space-y-4">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+                  <div class="flex items-center gap-3">
+                    <span class="text-xs sm:text-sm font-black text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-100">${time}</span>
+                    <h4 class="text-sm sm:text-base font-bold text-slate-900">${sessionTitle}</h4>
+                  </div>
+                  ${chairHtml}
+                </div>
+                <div class="divide-y divide-dashed divide-slate-200 space-y-3">
+                  ${subItemsHtml}
+                </div>
+              </div>
+            `;
+          }
+        });
+      } else {
+        timetableHtml = '<div class="text-center py-6 text-xs text-slate-400">등록된 프로그램 정보가 없습니다.</div>';
+      }
+
+      let galleryHtml = '';
+      if (galleryImgs.length > 0) {
+        let galleryCards = '';
+        galleryImgs.forEach((img, idx) => {
+          const cap = galleryCaps[idx] || `현장 스케치 (${idx + 1})`;
+          galleryCards += `
+            <div class="shrink-0 w-72 sm:w-80 flex flex-col space-y-2">
+              <div class="bg-slate-900 text-white text-center text-[11px] font-bold py-1.5 px-3 rounded-lg shadow-sm truncate">
+                ${cap}
+              </div>
+              <div class="h-52 rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 cursor-pointer relative group"
+                   onclick="openLightbox('${img}', '${encodeURIComponent(cap)}')">
+                <img src="${img}" alt="현장 사진" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.src='https://placehold.co/600x400?text=Photo'" />
+                <div class="absolute inset-0 bg-slate-950/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs">
+                  <i class="fa-solid fa-expand mr-1"></i> 원본 확대
+                </div>
+              </div>
+            </div>
+          `;
+        });
+
+        galleryHtml = `
+          <div class="fade-section bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+              <h3 class="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
+                <span class="text-emerald-600"><i class="fa-solid fa-images"></i></span> 현장 스케치 갤러리
+              </h3>
+              <div class="flex items-center gap-2">
+                <button onclick="scrollGallery(-1)" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-emerald-600 hover:text-white text-slate-700 flex items-center justify-center transition shadow-sm">
+                  <i class="fa-solid fa-chevron-left text-xs"></i>
+                </button>
+                <button onclick="scrollGallery(1)" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-emerald-600 hover:text-white text-slate-700 flex items-center justify-center transition shadow-sm">
+                  <i class="fa-solid fa-chevron-right text-xs"></i>
+                </button>
+              </div>
+            </div>
+            <div id="gallery-slider" class="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth py-2">
+              ${galleryCards}
+            </div>
+          </div>
+        `;
+      }
+
+      let videoHtml = '';
+      if (embedUrl) {
+        videoHtml = `
+          <div class="fade-section bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-4">
+            <h3 class="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-4">
+              <span class="text-red-600"><i class="fa-brands fa-youtube"></i></span> 다시보기
+            </h3>
+            <div class="relative w-full pt-[56.25%] rounded-2xl overflow-hidden border border-slate-200 bg-black shadow-inner">
+              <iframe src="${embedUrl}" class="absolute inset-0 w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+          </div>
+        `;
+      }
+
+      let applyBtnHtml = '';
+      if (mainInfo.applyUrl && mainInfo.applyUrl.trim() !== '' && mainInfo.applyUrl !== '#') {
+        applyBtnHtml = `
+          <div class="mt-6 pt-4 border-t border-slate-100">
+            <a href="${mainInfo.applyUrl}" target="_blank" rel="noopener noreferrer" class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-pen-to-square"></i> 행사 참가신청하기
+            </a>
+          </div>
+        `;
+      }
 
       container.innerHTML = `
         <!-- 1. 행사명 박스 -->
@@ -318,15 +476,7 @@
               <div class="text-xs sm:text-sm text-slate-600 leading-relaxed whitespace-pre-line">
                 ${overviewText}
               </div>
-
-              <!-- 참가신청 버튼 -->
-              ${mainInfo.applyUrl && mainInfo.applyUrl.trim() !== '' && mainInfo.applyUrl !== '#' ? `
-                <div class="mt-6 pt-4 border-t border-slate-100">
-                  <a href="${mainInfo.applyUrl}" target="_blank" rel="noopener noreferrer" class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-pen-to-square"></i> 행사 참가신청하기
-                  </a>
-                </div>
-              ` : ''}
+              ${applyBtnHtml}
             </div>
 
             <div class="mt-6 pt-4 border-t border-slate-100 text-[11px] text-slate-400 flex items-center justify-between">
@@ -343,132 +493,16 @@
               <span class="text-emerald-600"><i class="fa-solid fa-timeline"></i></span> 프로그램 안내
             </h3>
           </div>
-
           <div class="space-y-4">
-            ${Object.keys(timetableGroups).length > 0 ? Object.entries(timetableGroups).map(([time, items]) => {
-              // '휴식', '경품', '폐회' 키워드 포함 여부 또는 단독 단순 일정 체크
-              const isSpecialRow = items.some(i => {
-                const combinedText = `${i.sessionTitle || ''} ${i.overview \vert{}\vert{} ''}${i.speaker || ''}`;
-                return combinedText.includes('휴식') || combinedText.includes('경품') || combinedText.includes('폐회');
-              }) || (items.length === 1 && (!items[0].sessionTitle || items[0].sessionTitle.trim() === ''));
-
-              if (isSpecialRow) {
-                const specialText = items[0].sessionTitle || items[0].overview || items[0].speaker || '안내 사항';
-                return `
-                  <div class="bg-slate-100 border border-slate-200 rounded-2xl p-4 sm:px-6 flex items-center justify-between">
-                    <span class="text-xs sm:text-sm font-bold text-slate-700">${time}</span>
-                    <span class="text-xs sm:text-sm font-medium text-slate-600">${specialText}</span>
-                  </div>
-                `;
-              }
-
-              const firstItem = items[0];
-              const sessionTitle = firstItem.sessionTitle || '';
-              const chair = firstItem.chair || '';
-
-              return `
-                <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm space-y-4">
-                  <!-- 상단 시간 및 대주제/좌장 영역 -->
-                  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-4 border-b border-slate-100">
-                    <div class="flex items-center gap-3">
-                      <span class="text-xs sm:text-sm font-black text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-100">${time}</span>
-                      <h4 class="text-sm sm:text-base font-bold text-slate-900">${sessionTitle}</h4>
-                    </div>
-                    ${chair ? `
-                      <div class="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 text-xs font-semibold px-2.5 py-1 rounded-lg shrink-0 self-start lg:self-auto">
-                        <span class="bg-slate-800 text-white text-[10px] px-1.5 py-0.5 rounded font-bold">좌장</span> ${chair}
-                      </div>
-                    ` : ''}
-                  </div>
-
-                  <!-- 하위 세부 발표 목록 -->
-                  <div class="divide-y divide-dashed divide-slate-200 space-y-3">
-                    ${items.map((sub) => {
-                      if (!sub.speaker && !sub.overview && !sub.sessionTitle) return '';
-                      
-                      let rawSpeaker = sub.speaker || sub.overview || '';
-                      let affiliation = sub.affiliation || sub.speakerOrg || '';
-
-                      if (!affiliation && rawSpeaker.includes(' ')) {
-                        const parts = rawSpeaker.split(' ');
-                        rawSpeaker = parts[0];
-                        affiliation = parts.slice(1).join(' ');
-                      }
-
-                      return `
-                        <div class="pt-3 first:pt-0 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                          <div class="flex items-center gap-2">
-                            <span class="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded border border-emerald-100 shrink-0">발표</span>
-                            <div class="flex items-baseline gap-2 flex-wrap">
-                              <span class="text-xs sm:text-sm font-bold text-slate-900">(연사) ${rawSpeaker}</span>
-                              ${affiliation ? `<span class="text-xs text-slate-400 font-normal">${affiliation}</span>` : ''}
-                            </div>
-                          </div>
-                          
-                          <div class="flex items-center justify-end shrink-0">
-                            ${sub.pdfUrl && sub.pdfUrl.trim() !== '' && sub.pdfUrl !== '#' ? `
-                              <button onclick="openPdfModal('${sub.pdfUrl}')" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-emerald-600 bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-200 px-3 py-1.5 rounded-lg transition shadow-sm">
-                                <i class="fa-solid fa-paperclip text-[10px]"></i> 발표자료
-                              </button>
-                            ` : ''}
-                          </div>
-                        </div>
-                      `;
-                    }).join('')}
-                  </div>
-                </div>
-              `;
-            }).join('') : '<div class="text-center py-6 text-xs text-slate-400">등록된 프로그램 정보가 없습니다.</div>'}
+            ${timetableHtml}
           </div>
         </div>
 
         <!-- 4. 현장 스케치 갤러리 -->
-        ${galleryImgs.length > 0 ? `
-          <div class="fade-section bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-              <h3 class="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
-                <span class="text-emerald-600"><i class="fa-solid fa-images"></i></span> 현장 스케치 갤러리
-              </h3>
-              <div class="flex items-center gap-2">
-                <button onclick="scrollGallery(-1)" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-emerald-600 hover:text-white text-slate-700 flex items-center justify-center transition shadow-sm">
-                  <i class="fa-solid fa-chevron-left text-xs"></i>
-                </button>
-                <button onclick="scrollGallery(1)" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-emerald-600 hover:text-white text-slate-700 flex items-center justify-center transition shadow-sm">
-                  <i class="fa-solid fa-chevron-right text-xs"></i>
-                </button>
-              </div>
-            </div>
-
-            <div id="gallery-slider" class="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth py-2">
-              ${galleryImgs.map((img, idx) => `
-                <div class="shrink-0 w-72 sm:w-80 flex flex-col space-y-2">
-                  <div class="bg-slate-900 text-white text-center text-[11px] font-bold py-1.5 px-3 rounded-lg shadow-sm truncate">
-                    ${galleryCaps[idx] || `현장 스케치 (${idx + 1})`}
-                  </div>
-                  <div class="h-52 rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 cursor-pointer relative group"
-                       onclick="openLightbox('${img}', '${encodeURIComponent(galleryCaps[idx] || '현장 사진')}')">
-                    <img src="${img}" alt="현장 사진" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.src='https://placehold.co/600x400?text=Photo'" />
-                    <div class="absolute inset-0 bg-slate-950/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs">
-                      <i class="fa-solid fa-expand mr-1"></i> 원본 확대
-                    </div>
-                  </div>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        ` : ''}
+        ${galleryHtml}
 
         <!-- 5. 유튜브 영상 영역 -->
-        ${embedUrl ? `
-          <div class="fade-section bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-4">
-            <h3 class="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-4">
-              <span class="text-red-600"><i class="fa-brands fa-youtube"></i></span> 다시보기
-            </h3>
-            <div class="relative w-full pt-[56.25%] rounded-2xl overflow-hidden border border-slate-200 bg-black shadow-inner">
-              <iframe src="${embedUrl}" class="absolute inset-0 w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-            </div>
-          </div>
-        ` : ''}
+        ${videoHtml}
       `;
 
       initScrollObserver();
