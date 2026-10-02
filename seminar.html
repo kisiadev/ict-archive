@@ -346,19 +346,18 @@
 
           <div class="space-y-4">
             ${Object.keys(timetableGroups).length > 0 ? Object.entries(timetableGroups).map(([time, items]) => {
-              // '휴식' 관련 항목 또는 단독 단순 일정 체크
-              const isBreak = items.some(i => 
-                (i.sessionTitle && i.sessionTitle.includes('휴식')) || 
-                (i.overview && i.overview.includes('휴식')) || 
-                (i.speaker && i.speaker.includes('휴식'))
-              ) || (items.length === 1 && (!items[0].sessionTitle || items[0].sessionTitle.trim() === ''));
+              // '휴식', '경품', '폐회' 키워드 포함 여부 또는 단독 단순 일정 체크
+              const isSpecialRow = items.some(i => {
+                const combinedText = `${i.sessionTitle || ''} ${i.overview \vert{}\vert{} ''}${i.speaker || ''}`;
+                return combinedText.includes('휴식') || combinedText.includes('경품') || combinedText.includes('폐회');
+              }) || (items.length === 1 && (!items[0].sessionTitle || items[0].sessionTitle.trim() === ''));
 
-              if (isBreak) {
-                const breakText = items[0].sessionTitle || items[0].overview || items[0].speaker || '휴식 시간';
+              if (isSpecialRow) {
+                const specialText = items[0].sessionTitle || items[0].overview || items[0].speaker || '안내 사항';
                 return `
                   <div class="bg-slate-100 border border-slate-200 rounded-2xl p-4 sm:px-6 flex items-center justify-between">
                     <span class="text-xs sm:text-sm font-bold text-slate-700">${time}</span>
-                    <span class="text-xs sm:text-sm font-medium text-slate-600">${breakText}</span>
+                    <span class="text-xs sm:text-sm font-medium text-slate-600">${specialText}</span>
                   </div>
                 `;
               }
@@ -390,7 +389,6 @@
                       let rawSpeaker = sub.speaker || sub.overview || '';
                       let affiliation = sub.affiliation || sub.speakerOrg || '';
 
-                      // 만약 speaker 필드 안에 이름과 소속이 같이 적혀있을 경우 분리 처리
                       if (!affiliation && rawSpeaker.includes(' ')) {
                         const parts = rawSpeaker.split(' ');
                         rawSpeaker = parts[0];
@@ -402,7 +400,7 @@
                           <div class="flex items-center gap-2">
                             <span class="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded border border-emerald-100 shrink-0">발표</span>
                             <div class="flex items-baseline gap-2 flex-wrap">
-                              <span class="text-xs sm:text-sm font-bold text-slate-900">${rawSpeaker}</span>
+                              <span class="text-xs sm:text-sm font-bold text-slate-900">(연사) ${rawSpeaker}</span>
                               ${affiliation ? `<span class="text-xs text-slate-400 font-normal">${affiliation}</span>` : ''}
                             </div>
                           </div>
