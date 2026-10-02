@@ -13,6 +13,18 @@
     * { font-family: 'Pretendard', sans-serif; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* 스크롤 페이드 애니메이션을 위한 기본 스타일 */
+    .fade-section {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+      will-change: opacity, transform;
+    }
+    .fade-section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between relative">
@@ -126,6 +138,7 @@
 
     let seminarData = [];
     let currentRound = '';
+    let observer = null;
 
     function formatDriveImageUrl(url) {
       if (!url) return '';
@@ -221,6 +234,32 @@
       renderSeminarDetail(round);
     }
 
+    function initScrollObserver() {
+      if (observer) observer.disconnect();
+
+      const options = {
+        root: null,
+        rootMargin: '0px 0px -50px 0px',
+        threshold: 0.15
+      };
+
+      observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            // 아래로 스크롤하여 화면에 들어올 때 (서서히 나타남)
+            entry.target.classList.add('visible');
+          } else {
+            // 위로 스크롤하여 화면 밖으로 벗어날 때 (서서히 사라짐)
+            entry.target.classList.remove('visible');
+          }
+        });
+      }, options);
+
+      document.querySelectorAll('.fade-section').forEach(section => {
+        observer.observe(section);
+      });
+    }
+
     function renderSeminarDetail(round) {
       const container = document.getElementById('seminar-main-container');
       const matches = seminarData.filter(d => d.round === round);
@@ -246,13 +285,13 @@
 
       container.innerHTML = `
         <!-- 1. 행사명 박스 -->
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6 text-center transition-all duration-300">
+        <div class="fade-section bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6 text-center transition-all duration-300">
           <h2 class="font-bold text-emerald-600 uppercase tracking-widest block mb-1">${round}</h2>
           <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">${eventTitle}</h2>
         </div>
 
         <!-- 2. 포스터 이미지 & 행사 개요 2단 레이아웃 -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        <div class="fade-section grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
           <div class="lg:col-span-5 bg-white rounded-3xl border border-slate-200 shadow-sm p-4 flex items-center justify-center cursor-pointer group" onclick="openLightbox('${posterUrl}', '${encodeURIComponent(eventTitle)}')">
             <div class="relative w-full h-[400px] flex items-center justify-center bg-slate-100 rounded-2xl overflow-hidden">
               <img src="${posterUrl}" alt="행사 포스터" class="max-h-full max-w-full object-contain group-hover:scale-105 transition duration-300" onerror="this.src='https://placehold.co/600x800?text=Poster'" />
@@ -289,7 +328,7 @@
         </div>
 
         <!-- 3. 프로그램 안내 (타임테이블) -->
-        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden p-6 sm:p-8 space-y-6">
+        <div class="fade-section bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden p-6 sm:p-8 space-y-6">
           <div class="border-b border-slate-100 pb-4 text-center">
             <h3 class="text-lg sm:text-xl font-bold text-slate-900 flex items-center justify-center gap-2">
               <span class="text-emerald-600"><i class="fa-solid fa-timeline"></i></span> 프로그램 안내
@@ -310,7 +349,6 @@
                 ${matches.map(item => item.sessionTitle ? `
                   <tr class="hover:bg-slate-50 transition-colors">
                     <td class="py-4 px-4 whitespace-nowrap text-xs font-bold text-slate-700 text-center">${item.time || '-'}</td>
-                    <!-- whitespace-nowrap 클래스 추가로 자동 줄바꿈 방지 -->
                     <td class="py-4 px-4 font-semibold text-slate-900 text-center whitespace-nowrap">${item.sessionTitle}</td>
                     <td class="py-4 px-4 text-xs text-slate-600 text-center whitespace-nowrap">${item.speaker || '-'}</td>
                     <td class="py-4 px-4 text-center whitespace-nowrap">
@@ -329,7 +367,7 @@
 
         <!-- 4. 슬라이드 형식으로 FLOW 되는 이미지 갤러리 -->
         ${galleryImgs.length > 0 ? `
-          <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-4">
+          <div class="fade-section bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 pb-4">
               <h3 class="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
                 <span class="text-emerald-600"><i class="fa-solid fa-images"></i></span> 현장 스케치 갤러리
@@ -365,7 +403,7 @@
 
         <!-- 5. 유튜브 영상 올리기 영역 -->
         ${embedUrl ? `
-          <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-4">
+          <div class="fade-section bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-4">
             <h3 class="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-4">
               <span class="text-red-600"><i class="fa-brands fa-youtube"></i></span> 다시보기
             </h3>
@@ -375,6 +413,9 @@
           </div>
         ` : ''}
       `;
+
+      // 렌더링 완료 후 스크롤 감지 옵저버 적용
+      initScrollObserver();
     }
 
     function openPdfModal(pdfUrl) {
