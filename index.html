@@ -78,7 +78,7 @@
       <!-- 왼쪽: 메인 컨텐츠 영역 -->
       <div class="lg:col-span-9 space-y-16">
 
-        <!-- Section 0: 숫자로 보는 성과 -->
+        <!-- Section 0: 숫자로 보는 성과 (총 3개 카드 영역) -->
         <section id="stats-section" class="space-y-6 pt-2">
           <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1e1b4b] via-[#312e81] to-[#4338ca] p-6 sm:p-10 shadow-xl border border-indigo-500/30 text-white">
             <div class="absolute -top-24 -right-24 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
@@ -97,7 +97,8 @@
               <div class="w-12 h-1 bg-amber-400 mx-auto mt-3 rounded-full"></div>
             </div>
 
-            <div id="stats-grid" class="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <!-- 3개 칼럼으로 조정된 그리드 -->
+            <div id="stats-grid" class="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
               <div class="col-span-full py-8 text-center text-indigo-200 text-xs">
                 <i class="fa-solid fa-spinner fa-spin mr-2"></i> 성과 지표를 불러오는 중입니다...
               </div>
@@ -313,24 +314,24 @@
       renderCrewCards();
     }
 
-    // 숫자 내 숫자 추출 및 합산 유틸리티
     function extractNumber(val) {
       if (!val) return 0;
       const match = String(val).replace(/,/g, '').match(/-?\d+(\.\d+)?/);
       return match ? parseFloat(match[0]) : 0;
     }
 
-    // 숫자로 보는 성과 (ALL 선택 시 동일한 라벨끼리 자동 합산)
+    // 숫자로 보는 성과 (전체 보기 시 동일 라벨 합산, 개별 기수 시 해당 기수 데이터 출력 - 최대 3개 카드 제한)
     function renderStats() {
       const grid = document.getElementById('stats-grid');
       const titleEl = document.getElementById('stats-title');
       const sloganEl = document.getElementById('stats-slogan');
 
+      let statsToRender = [];
+
       if (currentGenFilter === 'ALL') {
         titleEl.innerHTML = `ICT융합보안크루 <span class="text-amber-300 font-black">전체 누적</span> 성과`;
         sloganEl.innerText = "내일의 융합보안을 이끌어온 대학생 보안 크루의 총합";
 
-        // 동일한 label 및 icon을 가진 항목끼리 합산 수행
         const aggregatedMap = {};
         statsData.forEach(item => {
           const label = (item.label || '').trim();
@@ -350,55 +351,42 @@
           aggregatedMap[label].sum += num;
         });
 
-        const summaryStats = Object.values(aggregatedMap).map(item => ({
+        statsToRender = Object.values(aggregatedMap).slice(0, 3).map(item => ({
           label: item.label,
           value: item.hasNumeric ? `${item.sum}${item.unit}` : '집계완료',
           icon: item.icon
         }));
-
-        if (summaryStats.length === 0) {
-          grid.innerHTML = `<div class="col-span-full py-8 text-center text-indigo-200 text-xs">집계된 성과 데이터가 없습니다.</div>`;
-          return;
-        }
-
-        grid.innerHTML = summaryStats.map(item => `
-          <div class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/15 hover:bg-white/15 transition flex flex-col justify-between text-center relative group">
-            <div>
-              <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-indigo-500/30 flex items-center justify-center text-amber-300 text-xl border border-indigo-400/30">
-                <i class="${item.icon}"></i>
-              </div>
-              <p class="text-xs sm:text-sm font-medium text-slate-200 leading-snug">${item.label}</p>
-            </div>
-            <div class="mt-4 pt-3 border-t border-white/10">
-              <span class="text-2xl sm:text-3xl font-black text-amber-300 tracking-tight text-gold">${item.value}</span>
-            </div>
-          </div>
-        `).join('');
       } else {
         titleEl.innerHTML = `ICT융합보안크루 <span class="text-amber-300 font-black">${currentGenFilter}</span> 성과`;
         const filtered = statsData.filter(item => item.gen === currentGenFilter);
         const currentSlogan = filtered.find(item => item.slogan && item.slogan.trim() !== '')?.slogan || "내일의 융합보안을 이끌 대학생 보안 크루";
         sloganEl.innerText = currentSlogan;
 
-        if (filtered.length === 0) {
-          grid.innerHTML = `<div class="col-span-full py-8 text-center text-indigo-200 text-xs">해당 기수의 집계 데이터가 없습니다.</div>`;
-          return;
-        }
-
-        grid.innerHTML = filtered.map(item => `
-          <div class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/15 hover:bg-white/15 transition flex flex-col justify-between text-center relative group">
-            <div>
-              <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-indigo-500/30 flex items-center justify-center text-amber-300 text-xl border border-indigo-400/30">
-                <i class="${item.icon || 'fa-solid fa-award'}"></i>
-              </div>
-              <p class="text-xs sm:text-sm font-medium text-slate-200 leading-snug">${item.label || ''}</p>
-            </div>
-            <div class="mt-4 pt-3 border-t border-white/10">
-              <span class="text-2xl sm:text-3xl font-black text-amber-300 tracking-tight text-gold">${item.value || ''}</span>
-            </div>
-          </div>
-        `).join('');
+        statsToRender = filtered.slice(0, 3).map(item => ({
+          label: item.label || '',
+          value: item.value || '',
+          icon: item.icon || 'fa-solid fa-award'
+        }));
       }
+
+      if (statsToRender.length === 0) {
+        grid.innerHTML = `<div class="col-span-full py-8 text-center text-indigo-200 text-xs">집계된 성과 데이터가 없습니다.</div>`;
+        return;
+      }
+
+      grid.innerHTML = statsToRender.map(item => `
+        <div class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/15 hover:bg-white/15 transition flex flex-col justify-between text-center relative group">
+          <div>
+            <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-indigo-500/30 flex items-center justify-center text-amber-300 text-xl border border-indigo-400/30">
+              <i class="${item.icon}"></i>
+            </div>
+            <p class="text-xs sm:text-sm font-medium text-slate-200 leading-snug">${item.label}</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-white/10">
+            <span class="text-2xl sm:text-3xl font-black text-amber-300 tracking-tight text-gold">${item.value}</span>
+          </div>
+        </div>
+      `).join('');
     }
 
     function renderTimeline() {
@@ -477,7 +465,6 @@
         return bBest - aBest;
       });
 
-      // 항상 모든 기수의 우수작을 가져오되, 최대 3개로 제한
       const bestItems = crewData.filter(item => String(item.isBest).toUpperCase() === 'TRUE').slice(0, 3);
 
       if (bestItems.length > 0) {
