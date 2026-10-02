@@ -30,7 +30,7 @@
     }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between relative">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between relative" data-source-file="index (3).html">
 
   <!-- GNB 헤더 -->
   <div class="bg-white border-b border-slate-200 py-3 px-4 sm:px-6 shadow-sm sticky top-0 z-30">
@@ -129,7 +129,7 @@
             <p class="text-sm text-slate-500 mt-1">팀별 심층 프로젝트 결과물, 요약문 및 최종 산출물 아카이브</p>
           </div>
 
-          <!-- 우수작 슬라이드 배너 영역 -->
+          <!-- 우수작 슬라이드 배너 영역 (최대 3개 제한) -->
           <div id="best-slider-wrapper" class="hidden space-y-3 bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-transparent p-5 rounded-2xl border border-amber-200/60">
             <div class="flex items-center justify-between">
               <h3 class="text-sm font-bold text-amber-800 flex items-center gap-1.5">
@@ -297,7 +297,7 @@
         ...statsData.map(d => d.gen)
       ].filter(Boolean))].sort().reverse();
 
-      let html = `<button onclick="filterCrew('ALL')" class="crew-filter-btn block w-full text-left py-2 px-3 rounded-lg text-sm font-semibold transition-all duration-300 ${currentGenFilter === 'ALL' ? 'text-slate-900 font-bold bg-slate-200/80 translate-x-1 shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'}">전체</button>`;
+      let html = `<button onclick="filterCrew('ALL')" class="crew-filter-btn block w-full text-left py-2 px-3 rounded-lg text-sm font-semibold transition-all duration-300 ${currentGenFilter === 'ALL' ? 'text-slate-900 font-bold bg-slate-200/80 translate-x-1 shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'}">전체 보기 (종합)</button>`;
       
       allGens.forEach(gen => {
         html += `<button onclick="filterCrew('${gen}')" class="crew-filter-btn block w-full text-left py-2 px-3 rounded-lg text-sm font-semibold transition-all duration-300 ${gen === currentGenFilter ? 'text-slate-900 font-bold bg-slate-200/80 translate-x-1 shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'}">${gen}</button>`;
@@ -313,6 +313,14 @@
       renderCrewCards();
     }
 
+    // 숫자 내 숫자 추출 및 합산 유틸리티
+    function extractNumber(val) {
+      if (!val) return 0;
+      const match = String(val).replace(/,/g, '').match(/-?\d+(\.\d+)?/);
+      return match ? parseFloat(match[0]) : 0;
+    }
+
+    // 숫자로 보는 성과 (ALL 선택 시 동일한 라벨끼리 자동 합산)
     function renderStats() {
       const grid = document.getElementById('stats-grid');
       const titleEl = document.getElementById('stats-title');
@@ -322,12 +330,36 @@
         titleEl.innerHTML = `ICT융합보안크루 <span class="text-amber-300 font-black">전체 누적</span> 성과`;
         sloganEl.innerText = "내일의 융합보안을 이끌어온 대학생 보안 크루의 총합";
 
-        const summaryStats = [
-          { label: "총 연구 수행 크루", value: "11개 크루", icon: "fa-solid fa-laptop-code" },
-          { label: "총 공모전 및 학술 수상", value: "3회 이상", icon: "fa-solid fa-trophy" },
-          { label: "총 학술대회 발표 및 게재", value: "19건+", icon: "fa-solid fa-chalkboard-user" },
-          { label: "오픈소스 및 지식재산권", value: "총 7건", icon: "fa-solid fa-hourglass-half" }
-        ];
+        // 동일한 label 및 icon을 가진 항목끼리 합산 수행
+        const aggregatedMap = {};
+        statsData.forEach(item => {
+          const label = (item.label || '').trim();
+          if (!label) return;
+          const num = extractNumber(item.value);
+          const unit = String(item.value).replace(/[\d,.-]/g, '').trim();
+
+          if (!aggregatedMap[label]) {
+            aggregatedMap[label] = {
+              label: label,
+              sum: 0,
+              unit: unit,
+              icon: item.icon || 'fa-solid fa-award',
+              hasNumeric: /\d/.test(item.value)
+            };
+          }
+          aggregatedMap[label].sum += num;
+        });
+
+        const summaryStats = Object.values(aggregatedMap).map(item => ({
+          label: item.label,
+          value: item.hasNumeric ? `${item.sum}${item.unit}` : '집계완료',
+          icon: item.icon
+        }));
+
+        if (summaryStats.length === 0) {
+          grid.innerHTML = `<div class="col-span-full py-8 text-center text-indigo-200 text-xs">집계된 성과 데이터가 없습니다.</div>`;
+          return;
+        }
 
         grid.innerHTML = summaryStats.map(item => `
           <div class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/15 hover:bg-white/15 transition flex flex-col justify-between text-center relative group">
@@ -445,8 +477,8 @@
         return bBest - aBest;
       });
 
-      // 항상 모든 기수의 우수작이 슬라이드에 노출되도록 설정
-      const bestItems = crewData.filter(item => String(item.isBest).toUpperCase() === 'TRUE');
+      // 항상 모든 기수의 우수작을 가져오되, 최대 3개로 제한
+      const bestItems = crewData.filter(item => String(item.isBest).toUpperCase() === 'TRUE').slice(0, 3);
 
       if (bestItems.length > 0) {
         sliderWrapper.classList.remove('hidden');
