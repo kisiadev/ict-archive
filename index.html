@@ -78,7 +78,7 @@
       <!-- 왼쪽: 메인 컨텐츠 영역 -->
       <div class="lg:col-span-9 space-y-16">
 
-        <!-- Section 0: 숫자로 보는 성과 (정확히 3개 박스 출력) -->
+        <!-- Section 0: 숫자로 보는 성과 -->
         <section id="stats-section" class="space-y-6 pt-2">
           <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1e1b4b] via-[#312e81] to-[#4338ca] p-6 sm:p-10 shadow-xl border border-indigo-500/30 text-white">
             <div class="absolute -top-24 -right-24 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
@@ -97,7 +97,7 @@
               <div class="w-12 h-1 bg-amber-400 mx-auto mt-3 rounded-full"></div>
             </div>
 
-            <!-- 3개 칼럼 그리드 -->
+            <!-- 정확히 3개 칼럼 그리드 -->
             <div id="stats-grid" class="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
               <div class="col-span-full py-8 text-center text-indigo-200 text-xs">
                 <i class="fa-solid fa-spinner fa-spin mr-2"></i> 성과 지표를 불러오는 중입니다...
@@ -321,7 +321,38 @@
       return match ? parseFloat(match[0]) : 0;
     }
 
-    // 숫자로 보는 성과 렌더링 (전체 선택 시 동일 라벨별 자동 합산, 기수 선택 시 구글 시트 그대로 표시)
+    // 숫자로 보는 성과 애니메이션 카운트업 함수
+    function runCounterAnimation() {
+      const counters = document.querySelectorAll('.stat-counter');
+      const duration = 1500; // 모든 카운터가 도달하는 시간 (1.5초)
+
+      counters.forEach(counter => {
+        const target = parseFloat(counter.getAttribute('data-target'));
+        const unit = counter.getAttribute('data-unit') || '';
+        const startTime = performance.now();
+
+        function updateCount(currentTime) {
+          const elapsedTime = currentTime - startTime;
+          const progress = Math.min(elapsedTime / duration, 1);
+          
+          // easeOutExpo 부드러운 감속 효과
+          const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+          const currentVal = Math.floor(easeProgress * target);
+
+          counter.innerText = currentVal + unit;
+
+          if (progress < 1) {
+            requestAnimationFrame(updateCount);
+          } else {
+            counter.innerText = target + unit;
+          }
+        }
+
+        requestAnimationFrame(updateCount);
+      });
+    }
+
+    // 숫자로 보는 성과 렌더링
     function renderStats() {
       const grid = document.getElementById('stats-grid');
       const titleEl = document.getElementById('stats-title');
@@ -340,7 +371,6 @@
           const num = extractNumber(item.value);
 
           if (!aggregatedMap[label]) {
-            // 지정된 성과별 단위 규칙 적용
             let unit = "건";
             if (label.includes("공모전 및 학술")) {
               unit = "회";
@@ -363,7 +393,8 @@
 
         statsToRender = Object.values(aggregatedMap).slice(0, 3).map(item => ({
           label: item.label,
-          value: item.hasNumeric ? `${item.sum}${item.unit}` : `0${item.unit}`,
+          targetNum: item.hasNumeric ? item.sum : 0,
+          unit: item.unit,
           icon: item.icon
         }));
       } else {
@@ -373,19 +404,21 @@
         sloganEl.innerText = currentSlogan;
 
         statsToRender = filtered.slice(0, 3).map(item => {
-          let val = item.value || '';
           let label = item.label || '';
-          // 개별 기수별로도 값이 숫자로만 되어있거나 단위를 붙여야 하는 경우 보정
-          const num = extractNumber(val);
-          if (label.includes("공모전 및 학술") && !val.includes("회")) {
-            val = `${num}회`;
-          } else if ((label.includes("학술대회 발표") || label.includes("오픈소스")) && !val.includes("건")) {
-            val = `${num}건`;
+          let val = item.value || '';
+          let num = extractNumber(val);
+          let unit = "건";
+
+          if (label.includes("공모전 및 학술")) {
+            unit = "회";
+          } else if (label.includes("학술대회 발표") || label.includes("오픈소스")) {
+            unit = "건";
           }
 
           return {
             label: label,
-            value: val,
+            targetNum: num,
+            unit: unit,
             icon: item.icon || 'fa-solid fa-award'
           };
         });
@@ -405,10 +438,13 @@
             <p class="text-xs sm:text-sm font-medium text-slate-200 leading-snug">${item.label}</p>
           </div>
           <div class="mt-4 pt-3 border-t border-white/10">
-            <span class="text-2xl sm:text-3xl font-black text-amber-300 tracking-tight text-gold">${item.value}</span>
+            <span class="text-2xl sm:text-3xl font-black text-amber-300 tracking-tight text-gold stat-counter" data-target="${item.targetNum}" data-unit="${item.unit}">0${item.unit}</span>
           </div>
         </div>
       `).join('');
+
+      // 애니메이션 실행
+      runCounterAnimation();
     }
 
     function renderTimeline() {
